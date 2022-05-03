@@ -54,8 +54,13 @@ export const redisConfig: RedisModuleOptions = {
 }
 
 export const jwtConfig: JwtModuleOptions = {
-	secret: env.str('JWT_SECRET', 'strongSecret'),
-	signOptions: { expiresIn: env.num('JWT_ACCESS_EXPIRY', 60 * 60) }
+	secret: env.str('JWT_SECRET', 'PRTjGu6ZjR2ykHmPrMgcRaUE'),
+	signOptions: { expiresIn: env.num('JWT_ACCESS_EXPIRY', 24 * 60 * 60) }
+}
+
+export const refreshTokenConfig: JwtModuleOptions = {
+	secret: env.str('JWT_REFRESH_SECRET', 'cftT6ZErGgDUJQCVCeEBn2k7'),
+	signOptions: { expiresIn: env.num('JWT_REFRESH_EXPIRY', 30 * 24 * 60 * 60) }
 }
 
 export const mailerConfig: MailerOptions = {
