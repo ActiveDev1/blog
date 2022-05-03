@@ -6,19 +6,19 @@ import { jwtConfig } from '../config'
 import { PassportModule } from '@nestjs/passport'
 import { JwtStrategy } from './jwt.strategy'
 import { RedisModule } from '../redis/redis.module'
-import { MailModule } from 'src/mail/mail.module'
-import { PrismaModule } from 'src/prisma/prisma.module'
+import { MailModule } from '../mail/mail.module'
+import { UserRepository } from 'src/user/users.repository'
+import { RefreshStrategy } from './refresh.strategy'
 
 @Module({
 	imports: [
 		PassportModule.register({ defaultStrategy: 'jwt' }),
 		JwtModule.register(jwtConfig),
-		PrismaModule,
 		RedisModule,
 		MailModule
 	],
 	controllers: [AuthController],
-	providers: [AuthService, JwtStrategy],
+	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository],
 	exports: [PassportModule, JwtStrategy]
 })
 export class AuthModule {}
