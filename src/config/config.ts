@@ -2,7 +2,7 @@ import { MailerOptions } from '@nestjs-modules/mailer'
 import { JwtModuleOptions } from '@nestjs/jwt'
 import { RedisModuleOptions } from 'nestjs-redis'
 import * as path from 'path'
-import * as env from '../utils/environment'
+import * as env from '../common/utils/environment'
 
 const environment = env.str('NODE_ENV', 'development')
 const debugStatus = env.bool('DEBUG', true)

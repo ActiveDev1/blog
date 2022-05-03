@@ -6,7 +6,7 @@ import {
 	generateRandomUsername,
 	generateSignupCode,
 	generateUsernameFromEmail
-} from '../utils/helpers/functions'
+} from '../common/utils/helpers/functions'
 import { GetEmailDto } from './dtos/get-email.dto'
 import { GetSignupVerificationDto } from './dtos/get-signup-verification-dto.dto'
 import { WrongVerificationCode } from './errors/wrong-verification-code'
