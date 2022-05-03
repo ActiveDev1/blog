@@ -19,6 +19,10 @@ export class RedisService {
 		)
 	}
 
+	async getSignupCode(email: string): Promise<string> {
+		return await this.redisClient.get(this.getVerificationEmailCodeKey(email))
+	}
+
 	private getVerificationEmailCodeKey(email: string) {
 		return 'vce_' + email
 	}
