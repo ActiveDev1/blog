@@ -1,7 +1,19 @@
 import * as _ from 'lodash'
 
-function generateSignupCode() {
-	return _.random(100000, 199999)
+function generateSignupCode(): number {
+	return generateRandomNumber()
 }
 
-export { generateSignupCode }
+function generateUsernameFromEmail(email: string): string {
+	return email.split('@')[0]
+}
+
+function generateRandomUsername(): string {
+	return 'user' + generateRandomNumber()
+}
+
+function generateRandomNumber(): number {
+	return _.random(100000, 999999)
+}
+
+export { generateSignupCode, generateUsernameFromEmail, generateRandomUsername }
