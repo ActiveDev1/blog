@@ -4,9 +4,13 @@ import {
 	FastifyAdapter,
 	NestFastifyApplication
 } from '@nestjs/platform-fastify'
-import { ValidationPipe } from '@nestjs/common'
+import { ValidationError, ValidationPipe } from '@nestjs/common'
 import { config } from './config'
-import { TransformInterceptor } from './common/interceptors/response-transform.interceptor'
+import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
+import {
+	ValidationException,
+	ValidationFilter
+} from './shared/filters/validation.filter'
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
@@ -18,7 +22,19 @@ async function bootstrap() {
 		})
 	)
 	app.useGlobalInterceptors(new TransformInterceptor())
-	app.useGlobalPipes(new ValidationPipe())
+	app.useGlobalFilters(new ValidationFilter())
+	app.useGlobalPipes(
+		new ValidationPipe({
+			skipMissingProperties: false,
+			exceptionFactory: (errors: ValidationError[]) => {
+				const errMsg = {}
+				errors.forEach((err) => {
+					errMsg[err.property] = [...Object.values(err.constraints)]
+				})
+				return new ValidationException(errMsg)
+			}
+		})
+	)
 	await app.listen(config.server.restApi.port, config.server.restApi.host)
 }
 
