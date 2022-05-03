@@ -1,4 +1,6 @@
+import { MailerOptions } from '@nestjs-modules/mailer'
 import { JwtModuleOptions } from '@nestjs/jwt'
+import { RedisModuleOptions } from 'nestjs-redis'
 import * as path from 'path'
 import * as env from '../utils/environment'
 
@@ -27,6 +29,27 @@ export const config = {
 			port: env.num('REST_PORT', 3000),
 			logger: env.bool('REST_LOGGER', true)
 		}
+	},
+	settings: {
+		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5)
+	}
+}
+
+export const redisConfig: RedisModuleOptions = {
+	host: env.str('REDIS_HOST', '127.0.0.1'),
+	port: env.num('REDIS_PORT', 6379),
+	password: env.str('REDIS_PASS', ''),
+	db: env.num('REDIS_DB', 0),
+	onClientReady: (client) => {
+		client.on('connect', () => {
+			console.info(
+				'\u001b[1;36mredis:info',
+				'\u001b[1;39mStarting a redis connection.'
+			)
+		})
+		client.on('error', (error) => {
+			console.error('\u001b[1;36mredis:error', `\u001b[1;39m ${error}`)
+		})
 	}
 }
 
@@ -35,19 +58,16 @@ export const jwtConfig: JwtModuleOptions = {
 	signOptions: { expiresIn: env.num('JWT_ACCESS_EXPIRY', 60 * 60) }
 }
 
-// export const typeOrmConfig: TypeOrmModuleOptions = {
-// 	type: 'mysql',
-// 	host: env.str('RDS_HOST', '127.0.0.1'),
-// 	port: env.num('RDS_PORT', 3306),
-// 	username: env.str('RDS_USERNAME', 'root'),
-// 	password: env.str('RDS_PASSWORD', ''),
-// 	database: env.str('RDS_DATABASE', 'url-shortener'),
-// 	synchronize: env.bool(
-// 		'TYPEORM_SYNC',
-// 		environment === 'development' ? true : false
-// 	),
-// 	entities: [__dirname + '/../**/*.entity.js']
-// 	// migrations: ['dist/migrations/*{.ts,.js}'],
-// 	// migrationsTableName: 'migrations_typeorm',
-// 	// migrationsRun: true
-// }
+export const mailerConfig: MailerOptions = {
+	transport: {
+		host: env.str('MAILER_HOST', 'smtp.mailtrap.io'),
+		port: env.num('MAILER_PORT', 2525),
+		auth: {
+			user: env.str('MAILER_USER', '043b6ba33c1069'),
+			pass: env.str('MAILER_PASS', 'fabf1b61c51212')
+		}
+	},
+	defaults: {
+		from: env.str('MAILER_FROM_DEFAULT', '"No Reply" <noreply@example.com>')
+	}
+}
