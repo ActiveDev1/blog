@@ -13,7 +13,7 @@ export class UserRepository {
 				email
 			},
 			update: {},
-			create: { email, name, username }
+			create: { email, name, username, profile: { create: {} } }
 		})
 	}
 
