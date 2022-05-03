@@ -5,11 +5,17 @@ import { AuthService } from './auth.service'
 import { jwtConfig } from '../config'
 import { PassportModule } from '@nestjs/passport'
 import { JwtStrategy } from './jwt.strategy'
+import { RedisModule } from '../redis/redis.module'
+import { MailModule } from 'src/mail/mail.module'
+import { PrismaModule } from 'src/prisma/prisma.module'
 
 @Module({
 	imports: [
 		PassportModule.register({ defaultStrategy: 'jwt' }),
-		JwtModule.register(jwtConfig)
+		JwtModule.register(jwtConfig),
+		PrismaModule,
+		RedisModule,
+		MailModule
 	],
 	controllers: [AuthController],
 	providers: [AuthService, JwtStrategy],
