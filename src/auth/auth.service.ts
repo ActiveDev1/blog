@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { UserRepository } from 'src/user/users.repository'
+import { MailService } from '../mail/mail.service'
+import { RedisService } from '../redis/redis.service'
+import { generateSignupCode } from '../utils/helpers/functions'
 import { GetEmailDto } from './dtos/get-email.dto'
 
 @Injectable()
 export class AuthService {
 	constructor(
-		private userRepository: UserRepository,
-		private jwtService: JwtService
+		private redisService: RedisService,
+		private mailService: MailService
 	) {}
 
 	async sendSignupCode(getEmailDto: GetEmailDto): Promise<void> {
-		// TODO: Generate a code
-		// TODO: Save code in redis
-		// TODO: Send code to gmail
+		const { email } = getEmailDto
+		const signupCode = generateSignupCode()
+		await this.redisService.addSignupCode(email, signupCode)
+		await this.mailService.sendUserConfirmation(email, signupCode)
 	}
 }
