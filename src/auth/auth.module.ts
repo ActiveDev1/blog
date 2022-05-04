@@ -7,7 +7,7 @@ import { PassportModule } from '@nestjs/passport'
 import { JwtStrategy } from './jwt.strategy'
 import { RedisModule } from '../redis/redis.module'
 import { MailModule } from '../mail/mail.module'
-import { UserRepository } from 'src/user/users.repository'
+import { UserRepository } from '../user/users.repository'
 import { RefreshStrategy } from './refresh.strategy'
 
 @Module({
