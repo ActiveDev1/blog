@@ -8,13 +8,13 @@ import {
 	generateUsernameFromEmail
 } from '../common/utils/helpers/functions'
 import { GetEmailDto } from './dtos/get-email.dto'
-import { GetSignupVerificationDto } from './dtos/get-signup-verification-dto.dto'
+import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import { WrongVerificationCode } from './errors/wrong-verification-code'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
-import { ICreateUser } from 'src/user/interfaces/create-user.interface'
-import { ITokens } from './interfaces/tokens.interface'
+import { ICreateUser } from '../user/interfaces/create-user.interface'
 import { refreshTokenConfig } from '../config'
+import { Tokens } from './dtos/tokens.dto'
 
 @Injectable()
 export class AuthService {
@@ -36,7 +36,7 @@ export class AuthService {
 
 	async signup(
 		getSignupVerificationDto: GetSignupVerificationDto
-	): Promise<ITokens> {
+	): Promise<Tokens> {
 		const { email, code } = getSignupVerificationDto
 		const emailVerificationCode = await this.redisService.getSignupCode(email)
 		if (emailVerificationCode !== code) {
@@ -51,11 +51,11 @@ export class AuthService {
 		return this.sendAuthorizedMessage(user.id)
 	}
 
-	async verifyRefreshToken(userId: string): Promise<ITokens> {
+	async verifyRefreshToken(userId: string): Promise<Tokens> {
 		return this.sendAuthorizedMessage(userId)
 	}
 
-	private async sendAuthorizedMessage(userId: string): Promise<ITokens> {
+	private async sendAuthorizedMessage(userId: string): Promise<Tokens> {
 		const payload: JwtPayload = { id: userId }
 		const [accessToken, refreshToken] = await Promise.all([
 			this.jwtService.signAsync(payload),
