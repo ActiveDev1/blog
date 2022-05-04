@@ -11,6 +11,7 @@ import {
 	ValidationException,
 	ValidationFilter
 } from './shared/filters/validation.filter'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
@@ -21,6 +22,7 @@ async function bootstrap() {
 				: false
 		})
 	)
+	app.setGlobalPrefix('api')
 	app.useGlobalInterceptors(new TransformInterceptor())
 	app.useGlobalFilters(new ValidationFilter())
 	app.useGlobalPipes(
@@ -35,6 +37,15 @@ async function bootstrap() {
 			}
 		})
 	)
+
+	const configDocument = new DocumentBuilder()
+		.setTitle('Blog Service')
+		.setDescription('The Blog APIs document')
+		.setVersion('1.0')
+		.build()
+	const document = SwaggerModule.createDocument(app, configDocument)
+	SwaggerModule.setup('swagger', app, document)
+
 	await app.listen(config.server.restApi.port, config.server.restApi.host)
 }
 
