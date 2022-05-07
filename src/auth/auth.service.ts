@@ -9,12 +9,15 @@ import {
 } from '../common/utils/helpers/functions'
 import { GetEmailDto } from './dtos/get-email.dto'
 import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
-import { WrongVerificationCode } from './errors/wrong-verification-code'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
 import { ICreateUser } from '../user/interfaces/create-user.interface'
 import { refreshTokenConfig } from '../config'
 import { Tokens } from './dtos/tokens.dto'
+import { GetUserAuthDto } from './dtos/get-user-auth.dto'
+import * as argon2 from '../common/utils/argon2'
+import { WrongVerificationCode } from './errors/wrong-verification-code'
+import { WrongEmailPass } from './errors/wrong-email-password'
 
 @Injectable()
 export class AuthService {
@@ -49,6 +52,17 @@ export class AuthService {
 		const username = generateRandomUsername()
 		const userData: ICreateUser = { email, username, name }
 		const user = await this.userRepository.upsert(userData)
+
+		return this.sendAuthorizedMessage(user.id)
+	}
+
+	async login(getUserAuthDto: GetUserAuthDto): Promise<Tokens> {
+		const { email, password } = getUserAuthDto
+
+		const user = await this.userRepository.findById(email)
+		if (!user || !(await argon2.verifyPassword(user.password, password))) {
+			throw new WrongEmailPass()
+		}
 
 		return this.sendAuthorizedMessage(user.id)
 	}
