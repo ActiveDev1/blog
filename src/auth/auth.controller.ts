@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
@@ -10,9 +10,12 @@ import {
 	ApiUnprocessableEntityResponse,
 	ApiBody,
 	ApiHeader,
-	ApiTags
+	ApiTags,
+	ApiOkResponse,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger'
 import { Tokens } from './dtos/tokens.dto'
+import { GetUserAuthDto } from './dtos/get-user-auth.dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -21,11 +24,12 @@ export class AuthController {
 
 	@Post('code')
 	@ApiBody({ type: GetEmailDto })
-	@ApiCreatedResponse({
+	@ApiOkResponse({
 		description: 'A verification code sent to target email'
 	})
+	@HttpCode(200)
 	async sendVerificationCode(@Body() getEmailDto: GetEmailDto): Promise<void> {
-		return await this.authService.sendVerificationCode(getEmailDto)
+		await this.authService.sendVerificationCode(getEmailDto)
 	}
 
 	@Post('signup')
@@ -43,13 +47,26 @@ export class AuthController {
 		return await this.authService.signup(getSignupVerificationDto)
 	}
 
+	@Post('login')
+	@ApiBody({ type: GetUserAuthDto })
+	@ApiOkResponse({
+		description: 'Successful login',
+		type: Tokens
+	})
+	@HttpCode(200)
+	@ApiUnauthorizedResponse({
+		description: 'Email and or password is incorrect'
+	})
+	async login(@Body() getUserAuthDto: GetUserAuthDto): Promise<Tokens> {
+		return await this.authService.login(getUserAuthDto)
+	}
+
 	@Post('refresh')
 	@UseGuards(AuthGuard('refresh'))
 	@ApiHeader({
 		name: 'Authorization',
-		allowEmptyValue: false,
 		description: 'Must be refresh token',
-		example: 'Bearer JWT-TOKEN'
+		required: true
 	})
 	@ApiCreatedResponse({
 		description: 'Access & Refresh tokens',
