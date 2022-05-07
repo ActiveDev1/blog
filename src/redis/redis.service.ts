@@ -10,7 +10,7 @@ export class RedisService {
 		this.redisClient = this.redisService.getClient()
 	}
 
-	async addSignupCode(email: string, code: number): Promise<void> {
+	async addVerificationCode(email: string, code: number): Promise<void> {
 		await this.redisClient.set(
 			this.getVerificationEmailCodeKey(email),
 			code,
@@ -19,7 +19,7 @@ export class RedisService {
 		)
 	}
 
-	async getSignupCode(email: string): Promise<string> {
+	async getVerificationCode(email: string): Promise<string> {
 		return await this.redisClient.get(this.getVerificationEmailCodeKey(email))
 	}
 

@@ -19,13 +19,13 @@ import { Tokens } from './dtos/tokens.dto'
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
-	@Post('signup/code')
+	@Post('code')
 	@ApiBody({ type: GetEmailDto })
 	@ApiCreatedResponse({
 		description: 'A verification code sent to target email'
 	})
-	async sendSignupCode(@Body() getEmailDto: GetEmailDto): Promise<void> {
-		return await this.authService.sendSignupCode(getEmailDto)
+	async sendVerificationCode(@Body() getEmailDto: GetEmailDto): Promise<void> {
+		return await this.authService.sendVerificationCode(getEmailDto)
 	}
 
 	@Post('signup')

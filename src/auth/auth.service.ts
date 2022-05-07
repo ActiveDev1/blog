@@ -25,11 +25,11 @@ export class AuthService {
 		private mailService: MailService
 	) {}
 
-	async sendSignupCode(getEmailDto: GetEmailDto): Promise<void> {
+	async sendVerificationCode(getEmailDto: GetEmailDto): Promise<void> {
 		const { email } = getEmailDto
 		const signupCode = generateSignupCode()
 		await Promise.all([
-			this.redisService.addSignupCode(email, signupCode),
+			this.redisService.addVerificationCode(email, signupCode),
 			this.mailService.sendUserConfirmation(email, signupCode)
 		])
 	}
@@ -38,7 +38,9 @@ export class AuthService {
 		getSignupVerificationDto: GetSignupVerificationDto
 	): Promise<Tokens> {
 		const { email, code } = getSignupVerificationDto
-		const emailVerificationCode = await this.redisService.getSignupCode(email)
+		const emailVerificationCode = await this.redisService.getVerificationCode(
+			email
+		)
 		if (emailVerificationCode !== code) {
 			throw new WrongVerificationCode()
 		}
