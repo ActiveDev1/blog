@@ -17,6 +17,7 @@ model User {
   username  String    @unique
   password  String?
   profile   Profile?
+  Post      Post[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -29,4 +30,19 @@ model Profile {
   cover  String?
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String  @unique
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  body        String    @db.Text()
+  description String
+  slug        String
+  cover       String
+  isPublished Boolean   @default(false)
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 }
