@@ -5,12 +5,17 @@ import {
 	Body,
 	Patch,
 	Param,
-	Delete
+	Delete,
+	UseGuards
 } from '@nestjs/common'
 import { PostService } from './post.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { GetUser } from 'src/auth/decorators/get-user.decorator'
+import { User } from '@prisma/client'
+import { AuthGuard } from '@nestjs/passport'
+import { GetPostIdDto } from './dto/get-post-id.dto'
 
 @ApiTags('Post')
 @Controller('post')
@@ -18,8 +23,9 @@ export class PostController {
 	constructor(private readonly postService: PostService) {}
 
 	@Post()
-	create(@Body() createPostDto: CreatePostDto) {
-		return this.postService.create(createPostDto)
+	@UseGuards(AuthGuard('jwt'))
+	async create(@Body() createPostDto: CreatePostDto, @GetUser() user: User) {
+		return await this.postService.create(createPostDto, user)
 	}
 
 	@Get()
@@ -28,8 +34,8 @@ export class PostController {
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.postService.findOne(+id)
+	async findOne(@Param() getPostIdDto: GetPostIdDto) {
+		return this.postService.findOne(getPostIdDto.id)
 	}
 
 	@Patch(':id')
