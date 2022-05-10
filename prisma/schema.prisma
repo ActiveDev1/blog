@@ -36,9 +36,9 @@ model Post {
   id          String    @id @default(cuid())
   title       String
   body        String    @db.Text()
-  description String
+  description String?
   slug        String
-  cover       String
+  cover       String?
   isPublished Boolean   @default(false)
   author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId    String
