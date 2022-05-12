@@ -5,7 +5,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 export class CreatePostDto {
 	@IsString()
 	@IsNotEmpty()
-	@Transform((value) => value.value.trim())
+	@Transform(({ value }) => value?.trim())
 	@ApiProperty()
 	title: string
 
@@ -21,7 +21,7 @@ export class CreatePostDto {
 
 	@IsString({ always: false })
 	@IsOptional()
-	@Transform((value) => value.value.trim())
+	@Transform(({ value }) => value?.trim())
 	@ApiPropertyOptional()
 	slug: string
 
