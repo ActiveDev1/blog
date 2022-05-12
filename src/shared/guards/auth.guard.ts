@@ -1,20 +1,26 @@
-import { ExecutionContext, Injectable } from '@nestjs/common'
+import { CanActivate, ExecutionContext, Injectable, mixin, Type } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard as PassportAuthGaurd } from '@nestjs/passport'
 
-@Injectable()
-export class AuthGuard extends PassportAuthGaurd(['jwt', 'refresh']) {
-	constructor(private readonly reflector: Reflector) {
-		super()
-	}
+type strategyType = 'jwt' | 'refresh'
 
-	canActivate(context: ExecutionContext) {
-		const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler())
-
-		if (isPublic) {
-			return true
+export const AuthGuard = (type: strategyType = 'jwt'): Type<CanActivate> => {
+	@Injectable()
+	class AuthGuardMixin extends PassportAuthGaurd(type) {
+		constructor(private readonly reflector: Reflector) {
+			super()
 		}
 
-		return super.canActivate(context)
+		canActivate(context: ExecutionContext) {
+			const isPublic = this.reflector.get<boolean>('isPublic', context.getHandler())
+
+			if (isPublic) {
+				return true
+			}
+
+			return super.canActivate(context)
+		}
 	}
+
+	return mixin(AuthGuardMixin)
 }

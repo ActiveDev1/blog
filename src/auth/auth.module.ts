@@ -3,7 +3,6 @@ import { JwtModule } from '@nestjs/jwt'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { jwtConfig } from '../config'
-import { PassportModule } from '@nestjs/passport'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { RedisModule } from '../redis/redis.module'
 import { MailModule } from '../mail/mail.module'
@@ -11,14 +10,8 @@ import { UserRepository } from '../user/users.repository'
 import { RefreshStrategy } from './strategies/refresh.strategy'
 
 @Module({
-	imports: [
-		PassportModule.register({ defaultStrategy: 'jwt' }),
-		JwtModule.register(jwtConfig),
-		RedisModule,
-		MailModule
-	],
+	imports: [JwtModule.register(jwtConfig), RedisModule, MailModule],
 	controllers: [AuthController],
-	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository],
-	exports: [PassportModule, JwtStrategy]
+	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository]
 })
 export class AuthModule {}

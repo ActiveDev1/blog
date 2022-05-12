@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
+import { AuthGuard } from '../shared/guards/auth.guard'
 import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { GetUser } from '../shared/decorators/get-user.decorator'
