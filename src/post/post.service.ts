@@ -5,7 +5,8 @@ import * as _ from 'lodash'
 import { generateRandomString, slugify } from '../common/utils/helpers/functions'
 import { Post, User } from '@prisma/client'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { WherePostUpdate } from './interfaces/where-post-update.interface'
+import { WherePost } from './interfaces/where-post.interface'
+import { PostNotFound } from 'src/shared/errors/post-not-found'
 
 @Injectable()
 export class PostService {
@@ -16,8 +17,8 @@ export class PostService {
 		const randomString = generateRandomString()
 
 		createPostDto.slug = _.isNil(slug) || _.isEmpty(slug) ? slugify(title) : slugify(slug)
-
 		createPostDto.slug += `-${randomString}`
+
 		return await this.postRepository.create(createPostDto, user.id)
 	}
 
@@ -26,11 +27,20 @@ export class PostService {
 	}
 
 	async findOne(id: string): Promise<Post> {
-		return await this.postRepository.findById(id)
+		const post = await this.postRepository.findById(id)
+		if (!post) {
+			throw new PostNotFound()
+		}
+		return post
 	}
 
-	async update({ id, authorId }: WherePostUpdate, updatePostDto: UpdatePostDto) {
+	async update({ id, authorId }: WherePost, updatePostDto: UpdatePostDto) {
 		const post = await this.postRepository.findById(id)
+
+		if (!post) {
+			throw new PostNotFound()
+		}
+
 		if (post.authorId !== authorId) {
 			throw new ForbiddenException()
 		}
@@ -41,5 +51,19 @@ export class PostService {
 		}
 
 		return await this.postRepository.updateOne(id, updatePostDto)
+	}
+
+	async delete({ id, authorId }: WherePost) {
+		const post = await this.postRepository.findById(id)
+
+		if (!post) {
+			throw new PostNotFound()
+		}
+
+		if (post.authorId !== authorId) {
+			throw new ForbiddenException()
+		}
+
+		return await this.postRepository.deleteOne(id)
 	}
 }

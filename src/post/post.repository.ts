@@ -3,8 +3,14 @@ import { PrismaService } from '../prisma/prisma.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
 
+interface WhereOptions {
+	isPublished?: boolean
+}
+
 @Injectable()
 export class PostRepository {
+	defaultWhereOption: WhereOptions = { isPublished: true }
+
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(createPostDto: CreatePostDto, authorId: string) {
@@ -13,15 +19,15 @@ export class PostRepository {
 		})
 	}
 
-	async findById(id: string) {
+	async findById(id: string, options?: WhereOptions) {
 		return await this.prisma.post.findFirst({
-			where: { id, isPublished: true, deletedAt: null }
+			where: { id, deletedAt: null, ...(options && this.defaultWhereOption) }
 		})
 	}
 
-	async findAllByUserId(userId: string) {
+	async findAllByUserId(userId: string, options?: WhereOptions) {
 		return await this.prisma.post.findMany({
-			where: { authorId: userId, isPublished: true, deletedAt: null }
+			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) }
 		})
 	}
 
@@ -30,5 +36,9 @@ export class PostRepository {
 			where: { id },
 			data: { ...updatePostDto }
 		})
+	}
+
+	async deleteOne(id: string) {
+		return await this.updateOne(id, { deletedAt: new Date() } as UpdatePostDto)
 	}
 }
