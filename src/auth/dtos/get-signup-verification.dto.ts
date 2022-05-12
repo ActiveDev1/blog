@@ -1,11 +1,12 @@
-import { IsEmail, IsNotEmpty, Length } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsNumberString, Length } from 'class-validator'
+import { EmailVerification } from '../interfaces/email-verification.interface'
 
-export class GetSignupVerificationDto {
+export class GetSignupVerificationDto implements EmailVerification {
 	@IsEmail()
 	@IsNotEmpty()
 	email: string
 
-	@IsNotEmpty()
+	@IsNumberString()
 	@Length(6, 6)
 	code: string
 }

@@ -7,13 +7,9 @@ import { ICreateUser } from './interfaces/create-user.interface'
 export class UserRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async upsert({ email, name, username }: ICreateUser): Promise<User> {
-		return await this.prisma.user.upsert({
-			where: {
-				email
-			},
-			update: {},
-			create: { email, name, username, profile: { create: {} } }
+	async create({ email, name, username }: ICreateUser): Promise<User> {
+		return await this.prisma.user.create({
+			data: { email, name, username, profile: { create: {} } }
 		})
 	}
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotAcceptableException } from '@nestjs/common'
 import { UserRepository } from '../user/users.repository'
 import { MailService } from '../mail/mail.service'
 import { RedisService } from '../redis/redis.service'
@@ -14,10 +14,14 @@ import { JwtPayload } from './interfaces/jwt-payload.interface'
 import { ICreateUser } from '../user/interfaces/create-user.interface'
 import { refreshTokenConfig } from '../config'
 import { Tokens } from './dtos/tokens.dto'
-import { GetUserAuthDto } from './dtos/get-user-auth.dto'
+import { GetEmailPassDto } from './dtos/get-email-pass.dto'
 import * as argon2 from '../common/utils/argon2'
 import { WrongVerificationCode } from './errors/wrong-verification-code'
 import { WrongEmailPass } from './errors/wrong-email-password'
+import { GetEmailCodeDto } from './dtos/get-email-code.dto'
+import { EmailVerification } from './interfaces/email-verification.interface'
+import { UserNotFound } from 'src/shared/errors/user-not-found'
+import * as _ from 'lodash'
 
 @Injectable()
 export class AuthService {
@@ -40,26 +44,28 @@ export class AuthService {
 	async signup(
 		getSignupVerificationDto: GetSignupVerificationDto
 	): Promise<Tokens> {
-		const { email, code } = getSignupVerificationDto
-		const emailVerificationCode = await this.redisService.getVerificationCode(
-			email
-		)
-		if (emailVerificationCode !== code) {
+		const { email } = getSignupVerificationDto
+
+		if (!this.checkVerificationCode(getSignupVerificationDto)) {
 			throw new WrongVerificationCode()
 		}
 
 		const name = generateUsernameFromEmail(email)
 		const username = generateRandomUsername()
-		const userData: ICreateUser = { email, username, name }
-		const user = await this.userRepository.upsert(userData)
+		const newUser: ICreateUser = { email, username, name }
+		const user = await this.userRepository.create(newUser)
 
 		return this.sendAuthorizedMessage(user.id)
 	}
 
-	async login(getUserAuthDto: GetUserAuthDto): Promise<Tokens> {
-		const { email, password } = getUserAuthDto
-
+	async loginWithPassword(getEmailPassDto: GetEmailPassDto): Promise<Tokens> {
+		const { email, password } = getEmailPassDto
 		const user = await this.userRepository.findById(email)
+
+		if (_.isNil(user?.password)) {
+			throw new NotAcceptableException()
+		}
+
 		if (!user || !(await argon2.verifyPassword(user.password, password))) {
 			throw new WrongEmailPass()
 		}
@@ -67,8 +73,28 @@ export class AuthService {
 		return this.sendAuthorizedMessage(user.id)
 	}
 
+	async loginWithCode(getEmailCodeDto: GetEmailCodeDto): Promise<Tokens> {
+		const user = await this.userRepository.findByEmail(getEmailCodeDto.email)
+		if (!user) {
+			throw new UserNotFound()
+		}
+
+		if (!this.checkVerificationCode(getEmailCodeDto)) {
+			throw new WrongVerificationCode()
+		}
+
+		return this.sendAuthorizedMessage(user.id)
+	}
+
 	async verifyRefreshToken(userId: string): Promise<Tokens> {
 		return this.sendAuthorizedMessage(userId)
+	}
+
+	private async checkVerificationCode({ email, code }: EmailVerification) {
+		const emailVerificationCode = await this.redisService.getVerificationCode(
+			email
+		)
+		return emailVerificationCode === code
 	}
 
 	private async sendAuthorizedMessage(userId: string): Promise<Tokens> {

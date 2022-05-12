@@ -12,10 +12,13 @@ import {
 	ApiHeader,
 	ApiTags,
 	ApiOkResponse,
-	ApiUnauthorizedResponse
+	ApiUnauthorizedResponse,
+	ApiNotAcceptableResponse,
+	ApiNotFoundResponse
 } from '@nestjs/swagger'
 import { Tokens } from './dtos/tokens.dto'
-import { GetUserAuthDto } from './dtos/get-user-auth.dto'
+import { GetEmailPassDto } from './dtos/get-email-pass.dto'
+import { GetEmailCodeDto } from './dtos/get-email-code.dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -47,18 +50,42 @@ export class AuthController {
 		return await this.authService.signup(getSignupVerificationDto)
 	}
 
-	@Post('login')
-	@ApiBody({ type: GetUserAuthDto })
+	@Post('login/password')
+	@ApiBody({ type: GetEmailPassDto })
 	@ApiOkResponse({
 		description: 'Successful login',
 		type: Tokens
 	})
-	@HttpCode(200)
+	@ApiNotAcceptableResponse({
+		description: 'The user has not yet registered the password'
+	})
 	@ApiUnauthorizedResponse({
 		description: 'Email and or password is incorrect'
 	})
-	async login(@Body() getUserAuthDto: GetUserAuthDto): Promise<Tokens> {
-		return await this.authService.login(getUserAuthDto)
+	@HttpCode(200)
+	async loginWithPassword(
+		@Body() getEmailPassDto: GetEmailPassDto
+	): Promise<Tokens> {
+		return await this.authService.loginWithPassword(getEmailPassDto)
+	}
+
+	@Post('login/code')
+	@ApiBody({ type: GetEmailCodeDto })
+	@ApiOkResponse({
+		description: 'Successful login',
+		type: Tokens
+	})
+	@ApiNotFoundResponse({
+		description: 'User not found'
+	})
+	@ApiUnprocessableEntityResponse({
+		description: 'Wrong code received'
+	})
+	@HttpCode(200)
+	async loginWithCode(
+		@Body() getEmailCodeDto: GetEmailCodeDto
+	): Promise<Tokens> {
+		return await this.authService.loginWithCode(getEmailCodeDto)
 	}
 
 	@Post('refresh')
