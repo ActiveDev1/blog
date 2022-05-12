@@ -44,9 +44,7 @@ export class AuthController {
 	@ApiUnprocessableEntityResponse({
 		description: 'Wrong code received'
 	})
-	async signup(
-		@Body() getSignupVerificationDto: GetSignupVerificationDto
-	): Promise<Tokens> {
+	async signup(@Body() getSignupVerificationDto: GetSignupVerificationDto): Promise<Tokens> {
 		return await this.authService.signup(getSignupVerificationDto)
 	}
 
@@ -63,9 +61,7 @@ export class AuthController {
 		description: 'Email and or password is incorrect'
 	})
 	@HttpCode(200)
-	async loginWithPassword(
-		@Body() getEmailPassDto: GetEmailPassDto
-	): Promise<Tokens> {
+	async loginWithPassword(@Body() getEmailPassDto: GetEmailPassDto): Promise<Tokens> {
 		return await this.authService.loginWithPassword(getEmailPassDto)
 	}
 
@@ -82,9 +78,7 @@ export class AuthController {
 		description: 'Wrong code received'
 	})
 	@HttpCode(200)
-	async loginWithCode(
-		@Body() getEmailCodeDto: GetEmailCodeDto
-	): Promise<Tokens> {
+	async loginWithCode(@Body() getEmailCodeDto: GetEmailCodeDto): Promise<Tokens> {
 		return await this.authService.loginWithCode(getEmailCodeDto)
 	}
 

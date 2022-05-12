@@ -7,13 +7,6 @@ import { RedisModule } from './redis/redis.module'
 import { MailModule } from './mail/mail.module'
 
 @Module({
-	imports: [
-		AuthModule,
-		PrismaModule,
-		RedisModule,
-		MailModule,
-		UserModule,
-		PostModule
-	]
+	imports: [AuthModule, PrismaModule, RedisModule, MailModule, UserModule, PostModule]
 })
 export class AppModule {}

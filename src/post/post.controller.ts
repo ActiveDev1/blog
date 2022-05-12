@@ -1,12 +1,4 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Param,
-	UseGuards,
-	Patch
-} from '@nestjs/common'
+import { Controller, Get, Post, Body, Param, UseGuards, Patch } from '@nestjs/common'
 import { PostService } from './post.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { ApiTags } from '@nestjs/swagger'
@@ -45,9 +37,6 @@ export class PostController {
 		@Body() updatePostDto: UpdatePostDto,
 		@GetUser() user: User
 	) {
-		return this.postService.update(
-			{ id: getPostIdDto.id, authorId: user.id },
-			updatePostDto
-		)
+		return this.postService.update({ id: getPostIdDto.id, authorId: user.id }, updatePostDto)
 	}
 }

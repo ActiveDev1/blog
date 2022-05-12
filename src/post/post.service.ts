@@ -2,10 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { CreatePostDto } from './dto/create-post.dto'
 import { PostRepository } from './post.repository'
 import * as _ from 'lodash'
-import {
-	generateRandomString,
-	slugify
-} from '../common/utils/helpers/functions'
+import { generateRandomString, slugify } from '../common/utils/helpers/functions'
 import { Post, User } from '@prisma/client'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { WherePostUpdate } from './interfaces/where-post-update.interface'
@@ -18,8 +15,7 @@ export class PostService {
 		const { slug, title } = createPostDto
 		const randomString = generateRandomString()
 
-		createPostDto.slug =
-			_.isNil(slug) || _.isEmpty(slug) ? slugify(title) : slugify(slug)
+		createPostDto.slug = _.isNil(slug) || _.isEmpty(slug) ? slugify(title) : slugify(slug)
 
 		createPostDto.slug += `-${randomString}`
 		return await this.postRepository.create(createPostDto, user.id)
@@ -33,10 +29,7 @@ export class PostService {
 		return await this.postRepository.findById(id)
 	}
 
-	async update(
-		{ id, authorId }: WherePostUpdate,
-		updatePostDto: UpdatePostDto
-	) {
+	async update({ id, authorId }: WherePostUpdate, updatePostDto: UpdatePostDto) {
 		const post = await this.postRepository.findById(id)
 		if (post.authorId !== authorId) {
 			throw new ForbiddenException()

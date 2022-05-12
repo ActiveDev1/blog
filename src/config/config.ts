@@ -42,10 +42,7 @@ export const redisConfig: RedisModuleOptions = {
 	db: env.num('REDIS_DB', 0),
 	onClientReady: (client) => {
 		client.on('connect', () => {
-			console.info(
-				'\u001b[1;36mredis:info',
-				'\u001b[1;39mStarting a redis connection.'
-			)
+			console.info('\u001b[1;36mredis:info', '\u001b[1;39mStarting a redis connection.')
 		})
 		client.on('error', (error) => {
 			console.error('\u001b[1;36mredis:error', `\u001b[1;39m ${error}`)

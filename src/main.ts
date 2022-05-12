@@ -1,25 +1,17 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import {
-	FastifyAdapter,
-	NestFastifyApplication
-} from '@nestjs/platform-fastify'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import { ValidationError, ValidationPipe } from '@nestjs/common'
 import { config } from './config'
 import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
-import {
-	ValidationException,
-	ValidationFilter
-} from './shared/filters/validation.filter'
+import { ValidationException, ValidationFilter } from './shared/filters/validation.filter'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
 		new FastifyAdapter({
-			logger: config.server.restApi.logger
-				? { prettyPrint: { colorize: true } }
-				: false
+			logger: config.server.restApi.logger ? { prettyPrint: { colorize: true } } : false
 		})
 	)
 	app.setGlobalPrefix('api')

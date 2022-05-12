@@ -41,9 +41,7 @@ export class AuthService {
 		])
 	}
 
-	async signup(
-		getSignupVerificationDto: GetSignupVerificationDto
-	): Promise<Tokens> {
+	async signup(getSignupVerificationDto: GetSignupVerificationDto): Promise<Tokens> {
 		const { email } = getSignupVerificationDto
 
 		if (!this.checkVerificationCode(getSignupVerificationDto)) {
@@ -91,9 +89,7 @@ export class AuthService {
 	}
 
 	private async checkVerificationCode({ email, code }: EmailVerification) {
-		const emailVerificationCode = await this.redisService.getVerificationCode(
-			email
-		)
+		const emailVerificationCode = await this.redisService.getVerificationCode(email)
 		return emailVerificationCode === code
 	}
 

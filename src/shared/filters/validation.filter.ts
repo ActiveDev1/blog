@@ -1,9 +1,4 @@
-import {
-	ArgumentsHost,
-	BadRequestException,
-	Catch,
-	ExceptionFilter
-} from '@nestjs/common'
+import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
 
 interface Response {
