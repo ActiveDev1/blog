@@ -2,7 +2,7 @@ import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
-import { GetUser } from './decorators/get-user.decorator'
+import { GetUser } from '../shared/decorators/get-user.decorator'
 import { GetEmailDto } from './dtos/get-email.dto'
 import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import {
