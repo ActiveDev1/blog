@@ -8,7 +8,7 @@ function generateUsernameFromEmail(email: string): string {
 	return email.split('@')[0]
 }
 
-function generateRandomUsername(): string {
+function generateRandomName(): string {
 	return 'user' + generateRandomNumber()
 }
 
@@ -32,7 +32,7 @@ function slugify(string: string): string {
 export {
 	generateSignupCode,
 	generateUsernameFromEmail,
-	generateRandomUsername,
+	generateRandomName,
 	generateRandomString,
 	slugify
 }

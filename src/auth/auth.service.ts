@@ -3,7 +3,7 @@ import { UserRepository } from '../user/users.repository'
 import { MailService } from '../mail/mail.service'
 import { RedisService } from '../redis/redis.service'
 import {
-	generateRandomUsername,
+	generateRandomName,
 	generateSignupCode,
 	generateUsernameFromEmail
 } from '../common/utils/helpers/functions'
@@ -48,8 +48,8 @@ export class AuthService {
 			throw new WrongVerificationCode()
 		}
 
-		const name = generateUsernameFromEmail(email)
-		const username = generateRandomUsername()
+		const name = generateRandomName()
+		const username = generateUsernameFromEmail(email)
 		const newUser: CreateUser = { email, username, name }
 		const user = await this.userRepository.create(newUser)
 
