@@ -4,11 +4,11 @@ import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { jwtConfig } from '../config'
 import { PassportModule } from '@nestjs/passport'
-import { JwtStrategy } from './jwt.strategy'
+import { JwtStrategy } from './strategies/jwt.strategy'
 import { RedisModule } from '../redis/redis.module'
 import { MailModule } from '../mail/mail.module'
 import { UserRepository } from '../user/users.repository'
-import { RefreshStrategy } from './refresh.strategy'
+import { RefreshStrategy } from './strategies/refresh.strategy'
 
 @Module({
 	imports: [
