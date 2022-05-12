@@ -11,7 +11,7 @@ import { GetEmailDto } from './dtos/get-email.dto'
 import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
-import { ICreateUser } from '../user/interfaces/create-user.interface'
+import { CreateUser } from '../user/interfaces/create-user.interface'
 import { refreshTokenConfig } from '../config'
 import { Tokens } from './dtos/tokens.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
@@ -52,7 +52,7 @@ export class AuthService {
 
 		const name = generateUsernameFromEmail(email)
 		const username = generateRandomUsername()
-		const newUser: ICreateUser = { email, username, name }
+		const newUser: CreateUser = { email, username, name }
 		const user = await this.userRepository.create(newUser)
 
 		return this.sendAuthorizedMessage(user.id)
