@@ -3,22 +3,22 @@ import {
 	Get,
 	Post,
 	Body,
-	Patch,
 	Param,
-	Delete,
-	UseGuards
+	UseGuards,
+	Patch
 } from '@nestjs/common'
 import { PostService } from './post.service'
 import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
 import { ApiTags } from '@nestjs/swagger'
-import { GetUser } from 'src/auth/decorators/get-user.decorator'
+import { GetUser } from '../auth/decorators/get-user.decorator'
 import { User } from '@prisma/client'
 import { AuthGuard } from '@nestjs/passport'
-import { GetPostIdDto } from './dto/get-post-id.dto'
+import { GetPostIdParam } from './dto/get-post-id-param.dto'
+import { GetUserIdParam } from './dto/get-user-id-param.dto'
+import { UpdatePostDto } from './dto/update-post.dto'
 
 @ApiTags('Post')
-@Controller('post')
+@Controller('posts')
 export class PostController {
 	constructor(private readonly postService: PostService) {}
 
@@ -28,23 +28,26 @@ export class PostController {
 		return await this.postService.create(createPostDto, user)
 	}
 
-	@Get()
-	findAll() {
-		return this.postService.findAll()
+	@Get('author/:authorId')
+	async findAll(@Param() getUserIdDto: GetUserIdParam) {
+		return await this.postService.findAll(getUserIdDto.authorId)
 	}
 
 	@Get(':id')
-	async findOne(@Param() getPostIdDto: GetPostIdDto) {
-		return this.postService.findOne(getPostIdDto.id)
+	async findOne(@Param() getPostIdDto: GetPostIdParam) {
+		return await this.postService.findOne(getPostIdDto.id)
 	}
 
 	@Patch(':id')
-	update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-		return this.postService.update(+id, updatePostDto)
-	}
-
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.postService.remove(+id)
+	@UseGuards(AuthGuard('jwt'))
+	update(
+		@Param() getPostIdDto: GetPostIdParam,
+		@Body() updatePostDto: UpdatePostDto,
+		@GetUser() user: User
+	) {
+		return this.postService.update(
+			{ id: getPostIdDto.id, authorId: user.id },
+			updatePostDto
+		)
 	}
 }
