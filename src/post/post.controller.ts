@@ -14,11 +14,11 @@ import { GetUser } from '../shared/decorators/get-user.decorator'
 import { Public } from '../shared/decorators/public.decorator'
 import { User } from '@prisma/client'
 import { AuthGuard } from '../shared/guards/auth.guard'
-import { GetPostIdParam } from './dto/get-post-id-param.dto'
-import { GetUserIdParam } from './dto/get-user-id-param.dto'
+import { GetAuthorIdParam } from './dto/get-authorId-param.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { ResponsePostDto } from './dto/responses/response.post.dto'
-import { ResponseUserPostsDto } from './dto/responses/response.user.posts.dto'
+import { PostResponseDto } from './dto/responses/response.post.dto'
+import { UserPostsResponseDto } from './dto/responses/response.user.posts.dto'
+import { GetIdParam } from '../shared/dtos/get-id-param.dto'
 
 @ApiTags('Post')
 @Controller('posts')
@@ -32,8 +32,8 @@ export class PostController {
 	@ApiCreatedResponse({
 		description: 'New post created'
 	})
-	async create(@Body() createPostDto: CreatePostDto, @GetUser() user: User) {
-		return await this.postService.create(createPostDto, user)
+	async create(@Body() body: CreatePostDto, @GetUser() user: User) {
+		return await this.postService.create(body, user)
 	}
 
 	@Get('author/:authorId')
@@ -42,10 +42,10 @@ export class PostController {
 		description: 'User not found'
 	})
 	@ApiOkResponse({
-		type: ResponseUserPostsDto
+		type: UserPostsResponseDto
 	})
-	async findAll(@Param() getParam: GetUserIdParam) {
-		return await this.postService.findAll(getParam.authorId)
+	async findAll(@Param() param: GetAuthorIdParam) {
+		return await this.postService.findAll(param.authorId)
 	}
 
 	@Get(':id')
@@ -54,10 +54,10 @@ export class PostController {
 		description: 'Post not found'
 	})
 	@ApiOkResponse({
-		type: ResponsePostDto
+		type: PostResponseDto
 	})
-	async findOne(@Param() getParam: GetPostIdParam) {
-		return await this.postService.findOne(getParam.id)
+	async findOne(@Param() param: GetIdParam) {
+		return await this.postService.findOne(param.id)
 	}
 
 	@Patch(':id')
@@ -70,14 +70,10 @@ export class PostController {
 		description: `Can't access the post`
 	})
 	@ApiOkResponse({
-		type: ResponsePostDto
+		type: PostResponseDto
 	})
-	async update(
-		@Param() getPostIdDto: GetPostIdParam,
-		@Body() updatePostDto: UpdatePostDto,
-		@GetUser() user: User
-	) {
-		return await this.postService.update({ id: getPostIdDto.id, authorId: user.id }, updatePostDto)
+	async update(@Param() param: GetIdParam, @Body() body: UpdatePostDto, @GetUser() user: User) {
+		return await this.postService.update({ id: param.id, authorId: user.id }, body)
 	}
 
 	@Delete(':id')
@@ -89,9 +85,9 @@ export class PostController {
 		description: `Can't access the post`
 	})
 	@ApiOkResponse({
-		type: ResponsePostDto
+		type: PostResponseDto
 	})
-	async delete(@Param() getPostIdDto: GetPostIdParam, @GetUser() user: User) {
-		return await this.postService.delete({ id: getPostIdDto.id, authorId: user.id })
+	async delete(@Param() param: GetIdParam, @GetUser() user: User) {
+		return await this.postService.delete({ id: param.id, authorId: user.id })
 	}
 }
