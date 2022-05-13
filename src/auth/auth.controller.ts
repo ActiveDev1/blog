@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../shared/guards/auth.guard'
 import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
@@ -14,7 +14,8 @@ import {
 	ApiOkResponse,
 	ApiUnauthorizedResponse,
 	ApiNotAcceptableResponse,
-	ApiNotFoundResponse
+	ApiNotFoundResponse,
+	ApiNoContentResponse
 } from '@nestjs/swagger'
 import { Tokens } from './dtos/tokens.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
@@ -27,10 +28,10 @@ export class AuthController {
 
 	@Post('code')
 	@ApiBody({ type: GetEmailDto })
-	@ApiOkResponse({
+	@ApiNoContentResponse({
 		description: 'A verification code sent to target email'
 	})
-	@HttpCode(200)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async sendVerificationCode(@Body() getEmailDto: GetEmailDto): Promise<void> {
 		await this.authService.sendVerificationCode(getEmailDto)
 	}
