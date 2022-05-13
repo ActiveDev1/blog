@@ -17,7 +17,7 @@ model User {
   username  String    @unique
   password  String?
   profile   Profile?
-  Post      Post[]
+  posts     Post[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
