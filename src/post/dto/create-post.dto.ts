@@ -17,7 +17,7 @@ export class CreatePostDto {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	description: string
+	description: string | null
 
 	@IsString({ always: false })
 	@IsOptional()

@@ -7,10 +7,12 @@ import { Post, User } from '@prisma/client'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { WherePost } from './interfaces/where-post.interface'
 import { PostNotFound } from 'src/shared/errors/post-not-found'
+import { UserRepository } from 'src/user/users.repository'
+import { UserNotFound } from 'src/shared/errors/user-not-found'
 
 @Injectable()
 export class PostService {
-	constructor(private postRepository: PostRepository) {}
+	constructor(private postRepository: PostRepository, private userRepository: UserRepository) {}
 
 	async create(createPostDto: CreatePostDto, user: User): Promise<Post> {
 		const { slug, title } = createPostDto
@@ -22,8 +24,12 @@ export class PostService {
 		return await this.postRepository.create(createPostDto, user.id)
 	}
 
-	async findAll(userId: string): Promise<Post[]> {
-		return await this.postRepository.findAllByUserId(userId)
+	async findAll(userId: string): Promise<Partial<User>> {
+		const user = await this.userRepository.findOneWithProfileAndPosts(userId)
+		if (!user) {
+			throw new UserNotFound()
+		}
+		return user
 	}
 
 	async findOne(id: string): Promise<Post> {

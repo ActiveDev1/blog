@@ -3,13 +3,13 @@ import { PrismaService } from '../prisma/prisma.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
 
-interface WhereOptions {
+interface PostWhereOptions {
 	isPublished?: boolean
 }
 
 @Injectable()
 export class PostRepository {
-	defaultWhereOption: WhereOptions = { isPublished: true }
+	defaultWhereOption: PostWhereOptions = { isPublished: true }
 
 	constructor(private readonly prisma: PrismaService) {}
 
@@ -19,15 +19,16 @@ export class PostRepository {
 		})
 	}
 
-	async findById(id: string, options?: WhereOptions) {
+	async findById(id: string, options?: PostWhereOptions) {
 		return await this.prisma.post.findFirst({
 			where: { id, deletedAt: null, ...(options && this.defaultWhereOption) }
 		})
 	}
 
-	async findAllByUserId(userId: string, options?: WhereOptions) {
+	async findAllByUserId(userId: string, options?: PostWhereOptions) {
 		return await this.prisma.post.findMany({
-			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) }
+			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) },
+			include: { author: true }
 		})
 	}
 
