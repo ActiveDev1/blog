@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
-import { CreateUser } from './interfaces/create-user.interface'
+import { UserPersonalData } from './interfaces/create-user.interface'
 
 @Injectable()
 export class UserRepository {
-	findByIdWithPosts(userId: string) {
-		throw new Error('Method not implemented.')
+	defaultOptions: Prisma.UserArgs = {
+		select: { id: true, name: true, username: true, password: false }
 	}
+
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create({ email, name, username }: CreateUser): Promise<User> {
+	async create({ email, name, username }: UserPersonalData): Promise<User> {
 		return await this.prisma.user.create({
 			data: { email, name, username, profile: { create: {} } }
 		})
 	}
 
-	async findById(id: string): Promise<User> {
-		return await this.prisma.user.findUnique({
-			where: { id }
+	async findById(id: string, options?: Prisma.UserArgs): Promise<User> {
+		return await this.prisma.user.findFirst({
+			where: { id, deletedAt: null },
+			...(options || this.defaultOptions)
 		})
 	}
 
@@ -50,6 +52,13 @@ export class UserRepository {
 			profile: profileFind,
 			posts: postFindMany
 		}
-		return await this.prisma.user.findUnique({ where: { id }, select })
+		return await this.findById(id, {
+			select,
+			include: { posts: postFindMany, profile: profileFind }
+		})
+	}
+
+	async findOneWithProfile(id: string): Promise<User> {
+		return await this.findById(id, { select: { ...this.defaultOptions.select, profile: true } })
 	}
 }
