@@ -17,7 +17,7 @@ class ProfileData implements Partial<Profile> {
 	cover: string | null
 }
 
-export class ResponseUserPostsDto implements Partial<PostEntity> {
+export class UserPostsResponseDto implements Partial<PostEntity> {
 	id: string
 	name: string
 	username: string

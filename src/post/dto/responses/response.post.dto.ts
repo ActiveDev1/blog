@@ -1,6 +1,6 @@
 import { PostEntity } from 'src/post/entities/post.entity'
 
-export class ResponsePostDto implements Partial<PostEntity> {
+export class PostResponseDto implements Partial<PostEntity> {
 	id: string
 	title: string
 	body: string
