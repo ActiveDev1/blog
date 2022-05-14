@@ -1,39 +1,37 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
+import { UpdateUserDto } from './dtos/update-user.dto'
 import { UserPersonalData } from './interfaces/create-user.interface'
 
 @Injectable()
 export class UserRepository {
 	defaultOptions: Prisma.UserArgs = {
-		select: { id: true, name: true, username: true, password: false }
+		select: { id: true, name: true, username: true }
 	}
 
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create({ email, name, username }: UserPersonalData): Promise<User> {
+	async create({ email, name, username }: UserPersonalData) {
 		return await this.prisma.user.create({
 			data: { email, name, username, profile: { create: {} } }
 		})
 	}
 
-	async findById(id: string, options?: Prisma.UserArgs): Promise<User> {
+	async findById(id: string, options?: Prisma.UserArgs) {
 		return await this.prisma.user.findFirst({
 			where: { id, deletedAt: null },
 			...(options || this.defaultOptions)
 		})
 	}
 
-	async findByEmail(email: string): Promise<User> {
+	async findByEmail(email: string) {
 		return await this.prisma.user.findUnique({
 			where: { email }
 		})
 	}
 
 	async findOneWithProfileAndPosts(id: string) {
-		const profileFind: Prisma.ProfileArgs = {
-			select: { id: true, bio: true, avatar: true, cover: true }
-		}
 		const postFindMany: Prisma.PostFindManyArgs = {
 			select: {
 				id: true,
@@ -49,16 +47,21 @@ export class UserRepository {
 			id: true,
 			name: true,
 			username: true,
-			profile: profileFind,
+			profile: true,
 			posts: postFindMany
 		}
-		return await this.findById(id, {
-			select,
-			include: { posts: postFindMany, profile: profileFind }
-		})
+		return await this.findById(id, { select })
 	}
 
-	async findOneWithProfile(id: string): Promise<User> {
+	async findOneWithProfile(id: string) {
 		return await this.findById(id, { select: { ...this.defaultOptions.select, profile: true } })
+	}
+
+	async updateOne(id: string, data: UpdateUserDto) {
+		return await this.prisma.user.update({
+			where: { id },
+			data: { ...data, profile: { update: { ...data.profile } } },
+			select: { ...this.defaultOptions.select, profile: true }
+		})
 	}
 }
