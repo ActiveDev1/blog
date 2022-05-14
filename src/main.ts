@@ -8,12 +8,14 @@ import { ValidationException, ValidationFilter } from './shared/filters/validati
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 async function bootstrap() {
+	const { enabled, prettyPrint } = config.logger.server
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
 		new FastifyAdapter({
-			logger: config.server.restApi.logger ? { prettyPrint: { colorize: true } } : false
+			logger: enabled && prettyPrint ? { prettyPrint: { colorize: true } } : enabled ? true : false
 		})
 	)
+
 	app.setGlobalPrefix('api')
 	app.useGlobalInterceptors(new TransformInterceptor())
 	app.useGlobalFilters(new ValidationFilter())

@@ -5,29 +5,24 @@ import * as path from 'path'
 import * as env from '../common/utils/environment'
 
 const environment = env.str('NODE_ENV', 'development')
-const debugStatus = env.bool('DEBUG', true)
-const debugPrefix = `blog-service-${environment} `
-
-if (debugPrefix) {
-	process.env.DEBUG = debugPrefix
-}
 
 export const config = {
 	environment,
 	appName: 'blog-service',
-	debug: {
-		enabled: debugStatus,
-		prefix: debugPrefix
-	},
 	logger: {
-		level: env.str('LOG_LEVEL', 'silly')
+		database: {
+			enabled: env.bool('DATABASE_LOG', true)
+		},
+		server: {
+			enabled: env.bool('REST_LOGGER', true),
+			prettyPrint: env.bool('REST_LOGGER_Pretty', true)
+		}
 	},
 	rootDir: path.resolve(''),
 	server: {
 		restApi: {
 			host: env.str('REST_HOST', '0.0.0.0'),
-			port: env.num('REST_PORT', 3000),
-			logger: env.bool('REST_LOGGER', true)
+			port: env.num('REST_PORT', 3000)
 		}
 	},
 	settings: {
