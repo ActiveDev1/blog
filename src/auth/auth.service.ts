@@ -3,6 +3,7 @@ import { UserRepository } from '../user/users.repository'
 import { MailService } from '../mail/mail.service'
 import { RedisService } from '../redis/redis.service'
 import {
+	emailMask,
 	generateRandomName,
 	generateSignupCode,
 	generateUsernameFromEmail
@@ -11,16 +12,18 @@ import { GetEmailDto } from './dtos/get-email.dto'
 import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
+import { UserExistence } from './interfaces/user-existence.interface'
 import { UserPersonalData } from '../user/interfaces/create-user.interface'
 import { refreshTokenConfig } from '../config'
 import { Tokens } from './dtos/tokens.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
-import * as argon2 from '../common/utils/argon2'
 import { WrongVerificationCode } from './errors/wrong-verification-code'
 import { WrongEmailPass } from './errors/wrong-email-password'
 import { GetEmailCodeDto } from './dtos/get-email-code.dto'
 import { EmailVerification } from './interfaces/email-verification.interface'
 import { UserNotFound } from 'src/shared/errors/user-not-found'
+import { GetUsernameDto } from './dtos/get-username.dto'
+import * as argon2 from '../common/utils/argon2'
 import * as _ from 'lodash'
 
 @Injectable()
@@ -86,6 +89,21 @@ export class AuthService {
 
 	async verifyRefreshToken(userId: string): Promise<Tokens> {
 		return this.sendAuthorizedMessage(userId)
+	}
+
+	async checkUserExistence({ username }: GetUsernameDto) {
+		const user = await this.userRepository.findByUsername(username)
+		const userExist = user ? true : false
+		const data: UserExistence = {
+			userExistence: userExist,
+			verifyOptions: userExist
+				? {
+						email: emailMask(user.email),
+						password: _.isNil(user.password) ? false : true
+				  }
+				: undefined
+		}
+		return data
 	}
 
 	private async checkVerificationCode({ email, code }: EmailVerification) {

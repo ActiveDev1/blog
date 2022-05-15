@@ -18,8 +18,8 @@ export class UserRepository {
 		})
 	}
 
-	async findOne(id: string) {
-		return await this.prisma.user.findUnique({ where: { id } })
+	async findOne(whereInput: Prisma.UserWhereUniqueInput) {
+		return await this.prisma.user.findUnique({ where: whereInput })
 	}
 
 	async findById(id: string, options?: Prisma.UserArgs) {
@@ -30,9 +30,11 @@ export class UserRepository {
 	}
 
 	async findByEmail(email: string) {
-		return await this.prisma.user.findUnique({
-			where: { email }
-		})
+		return await this.findOne({ email })
+	}
+
+	async findByUsername(username: string) {
+		return await this.findOne({ username })
 	}
 
 	async findOneWithProfileAndPosts(id: string) {

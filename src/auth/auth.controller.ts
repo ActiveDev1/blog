@@ -20,6 +20,7 @@ import {
 import { Tokens } from './dtos/tokens.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
 import { GetEmailCodeDto } from './dtos/get-email-code.dto'
+import { GetUsernameDto } from './dtos/get-username.dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -96,5 +97,11 @@ export class AuthController {
 	})
 	async refreshToken(@GetUser() user: User): Promise<Tokens> {
 		return await this.authService.verifyRefreshToken(user.id)
+	}
+
+	@Post('user-existence')
+	@ApiBody({ type: GetEmailCodeDto })
+	async userExistence(@Body() body: GetUsernameDto) {
+		return await this.authService.checkUserExistence(body)
 	}
 }

@@ -29,10 +29,23 @@ function slugify(string: string): string {
 		.replace(/-+/g, '-')
 }
 
+function emailMask(email: string): string {
+	const maskedEmail = email.replace(/([^@\.])/g, '*').split('')
+	let previous = ''
+	for (let i = 0; i < maskedEmail.length; i++) {
+		if (i <= 1 || previous == '.' || previous == '@') {
+			maskedEmail[i] = email[i]
+		}
+		previous = email[i]
+	}
+	return maskedEmail.join('')
+}
+
 export {
 	generateSignupCode,
 	generateUsernameFromEmail,
 	generateRandomName,
 	generateRandomString,
-	slugify
+	slugify,
+	emailMask
 }
