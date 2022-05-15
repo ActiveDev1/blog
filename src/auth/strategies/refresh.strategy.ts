@@ -16,7 +16,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
 	}
 
 	async validate(payload: JwtPayload): Promise<User> {
-		const user = await this.userRepository.findById(payload.id)
+		const user = await this.userRepository.findOne(payload.id)
 		if (!user) {
 			throw new UnauthorizedException()
 		}
