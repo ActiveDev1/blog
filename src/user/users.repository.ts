@@ -78,4 +78,8 @@ export class UserRepository {
 			select: null
 		})
 	}
+
+	async getCount(where: Prisma.UserWhereUniqueInput) {
+		return await this.prisma.user.count({ where })
+	}
 }

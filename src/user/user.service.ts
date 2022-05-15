@@ -7,6 +7,8 @@ import * as _ from 'lodash'
 import { hashPassword, verifyPassword } from '../common/utils/argon2'
 import { User } from '@prisma/client'
 import { SamePassword } from './errors/same-password'
+import { GetUserInfoDto } from './dtos/get-user-info.dto'
+import { UserDataTypes } from './constant/user-data-type.enum'
 
 @Injectable()
 export class UserService {
@@ -50,5 +52,12 @@ export class UserService {
 		newPassword = await hashPassword(newPassword)
 
 		return await this.userRepository.updateOnePassword(user.id, newPassword)
+	}
+
+	async checkUserExistence(body: GetUserInfoDto) {
+		const { type, value } = body
+		const whereInput = type === UserDataTypes.USERNAME ? { username: value } : { email: value }
+		const userExistence = !!(await this.userRepository.getCount(whereInput))
+		return { userExistence }
 	}
 }

@@ -18,6 +18,7 @@ import { UpdateUserDto } from './dtos/update-user.dto'
 import { UpdateUserPasswordDto } from './dtos/update-user-password.dto'
 import { GetUser } from 'src/shared/decorators/get-user.decorator'
 import { User } from '@prisma/client'
+import { GetUserInfoDto } from './dtos/get-user-info.dto'
 
 @ApiTags('User')
 @Controller('users')
@@ -46,5 +47,11 @@ export class UserController {
 	@HttpCode(HttpStatus.OK)
 	async updatePassword(@GetUser() user: User, @Body() body: UpdateUserPasswordDto) {
 		await this.userService.updatePassword(user, body)
+	}
+
+	@Post('check-user-existence')
+	@HttpCode(HttpStatus.OK)
+	async checkUserExistence(@Body() body: GetUserInfoDto) {
+		return await this.userService.checkUserExistence(body)
 	}
 }
