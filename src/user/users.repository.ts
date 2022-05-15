@@ -18,6 +18,10 @@ export class UserRepository {
 		})
 	}
 
+	async findOne(id: string) {
+		return await this.prisma.user.findUnique({ where: { id } })
+	}
+
 	async findById(id: string, options?: Prisma.UserArgs) {
 		return await this.prisma.user.findFirst({
 			where: { id, deletedAt: null },
@@ -62,6 +66,14 @@ export class UserRepository {
 			where: { id },
 			data: { ...data, profile: { update: { ...data.profile } } },
 			select: { ...this.defaultOptions.select, profile: true }
+		})
+	}
+
+	async updateOnePassword(id: string, password: string) {
+		return await this.prisma.user.update({
+			where: { id },
+			data: { password },
+			select: null
 		})
 	}
 }
