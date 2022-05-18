@@ -12,6 +12,7 @@ import { RefreshStrategy } from './strategies/refresh.strategy'
 @Module({
 	imports: [JwtModule.register(jwtConfig), RedisModule, MailModule],
 	controllers: [AuthController],
-	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository]
+	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository],
+	exports: [AuthService]
 })
 export class AuthModule {}
