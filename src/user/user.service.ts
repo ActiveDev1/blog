@@ -7,12 +7,19 @@ import * as _ from 'lodash'
 import { hashPassword, verifyPassword } from '../common/utils/argon2'
 import { User } from '@prisma/client'
 import { SamePassword } from './errors/same-password'
+import { DuplicateEmail } from './errors/duplicate-email'
 import { GetUserInfoDto } from './dtos/get-user-info.dto'
 import { UserDataTypes } from './constant/user-data-type.enum'
+import { GetEmailVerificationDto } from '../auth/dtos/get-email-verification.dto'
+import { WrongVerificationCode } from '../auth/errors/wrong-verification-code'
+import { AuthService } from '../auth/auth.service'
 
 @Injectable()
 export class UserService {
-	constructor(private readonly userRepository: UserRepository) {}
+	constructor(
+		private readonly userRepository: UserRepository,
+		private readonly authService: AuthService
+	) {}
 
 	async findOne(id: string) {
 		const user = await this.userRepository.findById(id)
@@ -35,23 +42,40 @@ export class UserService {
 	}
 
 	async updatePassword(user: User, body: UpdateUserPasswordDto) {
-		let { oldPassword, newPassword } = body
+		const { id, password: currentPassword } = user
+		const { oldPassword, newPassword } = body
 
 		if (oldPassword === newPassword) {
 			throw new SamePassword()
 		}
 
 		if (
-			(!_.isNull(oldPassword) && _.isNull(user.password)) ||
-			(!_.isNull(user.password) &&
-				(_.isNull(oldPassword) || !(await verifyPassword(user.password, oldPassword))))
+			(!_.isNull(oldPassword) && _.isNull(currentPassword)) ||
+			(!_.isNull(currentPassword) &&
+				(_.isNull(oldPassword) || !(await verifyPassword(currentPassword, oldPassword))))
 		) {
 			throw new ForbiddenException()
 		}
 
-		newPassword = await hashPassword(newPassword)
+		const newHashPassword = await hashPassword(newPassword)
 
-		return await this.userRepository.updateOnePassword(user.id, newPassword)
+		return await this.userRepository.updatePassword(id, newHashPassword)
+	}
+
+	async updateEmail(userId: string, body: GetEmailVerificationDto) {
+		const { email, code } = body
+
+		if (await this.authService.checkVerificationCode({ email, code })) {
+			throw new WrongVerificationCode()
+		}
+
+		const user = await this.userRepository.findByEmail(email)
+
+		if (user) {
+			throw new DuplicateEmail()
+		}
+
+		return await this.userRepository.updateEmail(userId, email)
 	}
 
 	async checkUserExistence(body: GetUserInfoDto) {

@@ -18,8 +18,12 @@ export class UserRepository {
 		})
 	}
 
-	async findOne(whereInput: Prisma.UserWhereUniqueInput) {
-		return await this.prisma.user.findUnique({ where: whereInput })
+	private async updateById(id: string, data: Prisma.UserUpdateInput, options?: Prisma.UserArgs) {
+		return await this.prisma.user.update({ where: { id }, data, ...options })
+	}
+
+	async findOne(where: Prisma.UserWhereUniqueInput) {
+		return await this.prisma.user.findUnique({ where })
 	}
 
 	async findById(id: string, options?: Prisma.UserArgs) {
@@ -64,19 +68,19 @@ export class UserRepository {
 	}
 
 	async updateOne(id: string, data: UpdateUserDto) {
-		return await this.prisma.user.update({
-			where: { id },
-			data: { ...data, profile: { update: { ...data.profile } } },
-			select: { ...this.defaultOptions.select, profile: true }
-		})
+		return await this.updateById(
+			id,
+			{ ...data, profile: { update: { ...data.profile } } },
+			{ select: { ...this.defaultOptions.select, profile: true } }
+		)
 	}
 
-	async updateOnePassword(id: string, password: string) {
-		return await this.prisma.user.update({
-			where: { id },
-			data: { password },
-			select: null
-		})
+	async updatePassword(id: string, password: string) {
+		return await this.updateById(id, { password })
+	}
+
+	async updateEmail(id: string, email: string) {
+		return await this.updateById(id, { email })
 	}
 
 	async getCount(where: Prisma.UserWhereUniqueInput) {

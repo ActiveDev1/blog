@@ -19,6 +19,7 @@ import { UpdateUserPasswordDto } from './dtos/update-user-password.dto'
 import { GetUser } from 'src/shared/decorators/get-user.decorator'
 import { User } from '@prisma/client'
 import { GetUserInfoDto } from './dtos/get-user-info.dto'
+import { GetEmailVerificationDto } from 'src/auth/dtos/get-email-verification.dto'
 
 @ApiTags('User')
 @Controller('users')
@@ -47,6 +48,12 @@ export class UserController {
 	@HttpCode(HttpStatus.OK)
 	async updatePassword(@GetUser() user: User, @Body() body: UpdateUserPasswordDto) {
 		await this.userService.updatePassword(user, body)
+	}
+
+	@Post('change-email')
+	@HttpCode(HttpStatus.OK)
+	async updateEmail(@GetUser() user: User, @Body() body: GetEmailVerificationDto) {
+		await this.userService.updateEmail(user.id, body)
 	}
 
 	@Post('check-user-existence')

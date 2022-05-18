@@ -1,5 +1,5 @@
 import { Profile, User } from '@prisma/client'
-import { IsEmail, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator'
+import { IsEmail, IsOptional, IsString, ValidateNested } from 'class-validator'
 
 class UpdateProfile implements Partial<Profile> {
 	@IsString()
