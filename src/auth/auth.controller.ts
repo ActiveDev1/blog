@@ -4,7 +4,6 @@ import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { GetUser } from '../shared/decorators/get-user.decorator'
 import { GetEmailDto } from './dtos/get-email.dto'
-import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import {
 	ApiCreatedResponse,
 	ApiUnprocessableEntityResponse,
@@ -21,6 +20,7 @@ import { Tokens } from './dtos/tokens.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
 import { GetEmailCodeDto } from './dtos/get-email-code.dto'
 import { GetUsernameDto } from './dtos/get-username.dto'
+import { GetEmailVerificationDto } from './dtos/get-email-verification.dto'
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -33,12 +33,12 @@ export class AuthController {
 		description: 'A verification code sent to target email'
 	})
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async sendVerificationCode(@Body() getEmailDto: GetEmailDto): Promise<void> {
-		await this.authService.sendVerificationCode(getEmailDto)
+	async sendVerificationCode(@Body() body: GetEmailDto): Promise<void> {
+		await this.authService.sendVerificationCode(body)
 	}
 
 	@Post('signup')
-	@ApiBody({ type: GetSignupVerificationDto })
+	@ApiBody({ type: GetEmailVerificationDto })
 	@ApiCreatedResponse({
 		description: 'User created',
 		type: Tokens
@@ -46,8 +46,8 @@ export class AuthController {
 	@ApiUnprocessableEntityResponse({
 		description: 'Wrong code received'
 	})
-	async signup(@Body() getSignupVerificationDto: GetSignupVerificationDto): Promise<Tokens> {
-		return await this.authService.signup(getSignupVerificationDto)
+	async signup(@Body() body: GetEmailVerificationDto): Promise<Tokens> {
+		return await this.authService.signup(body)
 	}
 
 	@Post('login/password')
@@ -63,8 +63,8 @@ export class AuthController {
 		description: 'Email and or password is incorrect'
 	})
 	@HttpCode(200)
-	async loginWithPassword(@Body() getEmailPassDto: GetEmailPassDto): Promise<Tokens> {
-		return await this.authService.loginWithPassword(getEmailPassDto)
+	async loginWithPassword(@Body() body: GetEmailPassDto): Promise<Tokens> {
+		return await this.authService.loginWithPassword(body)
 	}
 
 	@Post('login/code')
@@ -80,8 +80,8 @@ export class AuthController {
 		description: 'Wrong code received'
 	})
 	@HttpCode(200)
-	async loginWithCode(@Body() getEmailCodeDto: GetEmailCodeDto): Promise<Tokens> {
-		return await this.authService.loginWithCode(getEmailCodeDto)
+	async loginWithCode(@Body() body: GetEmailCodeDto): Promise<Tokens> {
+		return await this.authService.loginWithCode(body)
 	}
 
 	@Post('refresh')

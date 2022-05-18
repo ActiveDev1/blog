@@ -9,7 +9,6 @@ import {
 	generateUsernameFromEmail
 } from '../common/utils/helpers/functions'
 import { GetEmailDto } from './dtos/get-email.dto'
-import { GetSignupVerificationDto } from './dtos/get-signup-verification.dto'
 import { JwtService } from '@nestjs/jwt'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
 import { UserExistence } from './interfaces/user-existence.interface'
@@ -25,6 +24,7 @@ import { UserNotFound } from 'src/shared/errors/user-not-found'
 import { GetUsernameDto } from './dtos/get-username.dto'
 import * as argon2 from '../common/utils/argon2'
 import * as _ from 'lodash'
+import { GetEmailVerificationDto } from './dtos/get-email-verification.dto'
 
 @Injectable()
 export class AuthService {
@@ -35,8 +35,8 @@ export class AuthService {
 		private mailService: MailService
 	) {}
 
-	async sendVerificationCode(getEmailDto: GetEmailDto): Promise<void> {
-		const { email } = getEmailDto
+	async sendVerificationCode(body: GetEmailDto): Promise<void> {
+		const { email } = body
 		const signupCode = generateSignupCode()
 		await Promise.all([
 			this.redisService.addVerificationCode(email, signupCode),
@@ -44,10 +44,10 @@ export class AuthService {
 		])
 	}
 
-	async signup(getSignupVerificationDto: GetSignupVerificationDto): Promise<Tokens> {
-		const { email } = getSignupVerificationDto
+	async signup(body: GetEmailVerificationDto): Promise<Tokens> {
+		const { email } = body
 
-		if (!this.checkVerificationCode(getSignupVerificationDto)) {
+		if (this.checkVerificationCode(body)) {
 			throw new WrongVerificationCode()
 		}
 
@@ -59,8 +59,8 @@ export class AuthService {
 		return this.sendAuthorizedMessage(user.id)
 	}
 
-	async loginWithPassword(getEmailPassDto: GetEmailPassDto): Promise<Tokens> {
-		const { email, password } = getEmailPassDto
+	async loginWithPassword(body: GetEmailPassDto): Promise<Tokens> {
+		const { email, password } = body
 		const user = await this.userRepository.findById(email)
 
 		if (_.isNil(user?.password)) {
@@ -74,13 +74,13 @@ export class AuthService {
 		return this.sendAuthorizedMessage(user.id)
 	}
 
-	async loginWithCode(getEmailCodeDto: GetEmailCodeDto): Promise<Tokens> {
-		const user = await this.userRepository.findByEmail(getEmailCodeDto.email)
+	async loginWithCode(body: GetEmailCodeDto): Promise<Tokens> {
+		const user = await this.userRepository.findByEmail(body.email)
 		if (!user) {
 			throw new UserNotFound()
 		}
 
-		if (!this.checkVerificationCode(getEmailCodeDto)) {
+		if (this.checkVerificationCode(body)) {
 			throw new WrongVerificationCode()
 		}
 
@@ -106,9 +106,9 @@ export class AuthService {
 		return data
 	}
 
-	private async checkVerificationCode({ email, code }: EmailVerification) {
+	async checkVerificationCode({ email, code }: EmailVerification) {
 		const emailVerificationCode = await this.redisService.getVerificationCode(email)
-		return emailVerificationCode === code
+		return !(emailVerificationCode === code)
 	}
 
 	private async sendAuthorizedMessage(userId: string): Promise<Tokens> {
