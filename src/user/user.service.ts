@@ -30,11 +30,11 @@ export class UserService {
 	}
 
 	async findOneProfile(id: string) {
-		const user = await this.userRepository.findOneWithProfile(id)
-		if (!user) {
-			throw new UserNotFound()
-		}
-		return user
+		return await this.userRepository.findOneWithProfile(id)
+	}
+
+	async findOnePosts(id: string) {
+		return await this.userRepository.findPosts(id)
 	}
 
 	async update(id: string, body: UpdateUserDto) {

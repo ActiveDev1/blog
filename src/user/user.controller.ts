@@ -39,6 +39,11 @@ export class UserController {
 		return await this.userService.findOneProfile(param.id)
 	}
 
+	@Get('posts')
+	async findOnePosts(@GetUser() user: User) {
+		return await this.userService.findOnePosts(user.id)
+	}
+
 	@Patch('')
 	async update(@GetUser() user: User, @Body() body: UpdateUserDto) {
 		return await this.userService.update(user.id, body)

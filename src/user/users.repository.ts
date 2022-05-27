@@ -67,6 +67,10 @@ export class UserRepository {
 		return await this.findById(id, { select: { ...this.defaultOptions.select, profile: true } })
 	}
 
+	async findPosts(id: string) {
+		return await this.findById(id, { select: { posts: true } })
+	}
+
 	async updateOne(id: string, data: UpdateUserDto) {
 		return await this.updateById(
 			id,
