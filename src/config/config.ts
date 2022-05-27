@@ -1,5 +1,6 @@
 import { MailerOptions } from '@nestjs-modules/mailer'
 import { JwtModuleOptions } from '@nestjs/jwt'
+import { NestMinioOptions } from 'nestjs-minio'
 import { RedisModuleOptions } from 'nestjs-redis'
 import * as path from 'path'
 import * as env from '../common/utils/environment'
@@ -67,4 +68,15 @@ export const mailerConfig: MailerOptions = {
 	defaults: {
 		from: env.str('MAILER_FROM_DEFAULT', '"No Reply" <noreply@example.com>')
 	}
+}
+
+export const NestMinioConfigs = {
+	config: {
+		endPoint: env.str('MINIO_ENDPOINT', 'play.min.io'),
+		port: env.num('MINIO_ENDPOINT', 9000),
+		useSSL: env.bool('MINIO_ENDPOINT', true),
+		accessKey: env.str('MINIO_ENDPOINT', 'Q3AM3UQ867SPQQA43P2F'),
+		secretKey: env.str('MINIO_ENDPOINT', 'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG')
+	} as NestMinioOptions,
+	bucket: env.str('MINIO_ENDPOINT', 'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG')
 }
