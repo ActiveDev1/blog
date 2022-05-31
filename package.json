@@ -40,6 +40,7 @@
 		"fastify-multer": "^2.0.2",
 		"fastify-swagger": "^5.2.0",
 		"lodash": "^4.17.21",
+		"nest-fastify-multer": "^1.0.1",
 		"nestjs-minio": "^2.1.16",
 		"nestjs-redis": "git+https://github.com/GyanendroKh/nestjs-redis.git#nest8-fix",
 		"nodemailer": "^6.7.5",
