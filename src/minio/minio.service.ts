@@ -7,7 +7,7 @@ import { ErrorUploadFile } from './errors/error-upload-file'
 import { ErrorDeleteFile } from './errors/error-delete-file'
 import * as crypto from 'crypto'
 
-type dirType = 'users' | 'posts'
+type dirType = 'users/avatars' | 'users/covers' | 'posts/covers'
 
 interface FileInfo {
 	file: BufferedFile
