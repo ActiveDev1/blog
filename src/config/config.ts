@@ -27,7 +27,11 @@ export const config = {
 		}
 	},
 	settings: {
-		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5)
+		publicDir: env.str('PUBLIC_DIR', 'http://localhost:9000/blog/'),
+		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5),
+		upload: {
+			maxAvatarFileSize: env.num('AVATAR_FILE_SIZE_LIMIT', 1 * 1024 * 1024)
+		}
 	}
 }
 
@@ -72,11 +76,11 @@ export const mailerConfig: MailerOptions = {
 
 export const NestMinioConfigs = {
 	config: {
-		endPoint: env.str('MINIO_ENDPOINT', 'play.min.io'),
-		port: env.num('MINIO_ENDPOINT', 9000),
-		useSSL: env.bool('MINIO_ENDPOINT', true),
-		accessKey: env.str('MINIO_ENDPOINT', 'Q3AM3UQ867SPQQA43P2F'),
-		secretKey: env.str('MINIO_ENDPOINT', 'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG')
+		endPoint: env.str('MINIO_ENDPOINT', '127.0.0.1'),
+		port: env.num('MINIO_PORT', 9000),
+		useSSL: env.bool('MINIO_SSL', false),
+		accessKey: env.str('MINIO_ACCESS_KEY', 'minioadmin'),
+		secretKey: env.str('MINIO_SECRET_KEY', 'minioadmin')
 	} as NestMinioOptions,
-	bucket: env.str('MINIO_ENDPOINT', 'zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG')
+	bucket: env.str('MINIO_BUCKET_NAME', 'blog')
 }
