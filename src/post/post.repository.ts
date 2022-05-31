@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { Post } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
+import { config } from '../config'
+import * as _ from 'lodash'
 
 interface PostWhereOptions {
 	isPublished?: boolean
@@ -37,6 +40,10 @@ export class PostRepository {
 			where: { id },
 			data: { ...updatePostDto }
 		})
+	}
+
+	async updateCover(id: string, cover: string) {
+		return await this.prisma.post.update({ where: { id }, data: { cover } })
 	}
 
 	async deleteOne(id: string) {

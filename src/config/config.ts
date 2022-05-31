@@ -30,7 +30,8 @@ export const config = {
 		publicDir: env.str('PUBLIC_DIR', 'http://localhost:9000/blog/'),
 		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5),
 		upload: {
-			maxAvatarFileSize: env.num('AVATAR_FILE_SIZE_LIMIT', 1 * 1024 * 1024)
+			maxAvatarFileSize: env.num('AVATAR_FILE_SIZE_LIMIT', 1 * 1024 * 1024),
+			maxPostCoverFileSize: env.num('POST_COVER_FILE_SIZE_LIMIT', 3 * 1024 * 1024)
 		}
 	}
 }
