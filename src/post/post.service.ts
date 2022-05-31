@@ -24,7 +24,7 @@ export class PostService {
 		return await this.postRepository.create(createPostDto, user.id)
 	}
 
-	async findAll(userId: string): Promise<Partial<User>> {
+	async findAll(userId: string) {
 		const user = await this.userRepository.findOneWithProfileAndPosts(userId)
 		if (!user) {
 			throw new UserNotFound()
