@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, OnModuleInit } from '@nestjs/common'
 import { NestMinioService } from 'nestjs-minio'
 import { BufferedFile } from '../shared/interfaces/buffered-file.interface'
 import { NestMinioConfigs } from '../config'
@@ -16,14 +16,32 @@ interface FileInfo {
 }
 
 @Injectable()
-export class MinioService {
-	constructor(private readonly minio: NestMinioService) {}
-
+export class MinioService implements OnModuleInit {
 	private readonly bucketName = NestMinioConfigs.bucket
 	private readonly baseUrl = `${NestMinioConfigs.config.endPoint}:${NestMinioConfigs.config.port}/`
 
+	constructor(private readonly minio: NestMinioService) {}
+
 	private get client() {
 		return this.minio.getMinio()
+	}
+	onModuleInit() {
+		this.initBucket()
+	}
+
+	async initBucket() {
+		this.client.bucketExists(this.bucketName, (err, result) => {
+			if (err) throw err
+			if (!result) {
+				this.client.makeBucket(this.bucketName, 'middle-east', (err) => {
+					if (err) throw err
+					console.log(
+						`\u001b[1;36mminio:info', '\u001b[1;39mBucket (${this.bucketName}) created successfully`
+					)
+				})
+			}
+		})
+		console.log(`\u001b[1;36mminio:info ` + `\u001b[1;39mStarting a minio connection.`)
 	}
 
 	async upload(fileInfo: FileInfo, bucketName: string = this.bucketName) {
