@@ -34,7 +34,7 @@ export class UserService {
 	}
 
 	async findOnePosts(id: string) {
-		return await this.userRepository.findPosts(id)
+		return await this.userRepository.findOneWithProfileAndPosts(id)
 	}
 
 	async update(id: string, body: UpdateUserDto) {
