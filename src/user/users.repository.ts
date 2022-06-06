@@ -1,14 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, Profile, User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { UpdateUserDto } from './dtos/update-user.dto'
 import { UserPersonalData } from './interfaces/create-user.interface'
-import { config } from '../config'
-import * as _ from 'lodash'
-
-interface UserWithProfile extends User {
-	profile: Profile
-}
 
 @Injectable()
 export class UserRepository {
@@ -66,15 +60,13 @@ export class UserRepository {
 			profile: true,
 			posts: postFindMany
 		}
-		return this.fixAvatar((await this.findById(id, { select })) as UserWithProfile)
+		return await this.findById(id, { select })
 	}
 
 	async findOneWithProfile(id: string) {
-		const result = await this.findById(id, {
+		return await this.findById(id, {
 			select: { ...this.defaultOptions.select, profile: true }
 		})
-
-		return this.fixAvatar(result as UserWithProfile)
 	}
 
 	async findOneProfile(userId: string) {
@@ -107,23 +99,5 @@ export class UserRepository {
 
 	async getCount(where: Prisma.UserWhereUniqueInput) {
 		return await this.prisma.user.count({ where })
-	}
-
-	private fixAvatar(data: UserWithProfile | UserWithProfile[]): User | User[] {
-		if (data) {
-			if (_.isArray(data)) {
-				data.map(
-					(user) =>
-						(user.profile.avatar = !_.isEmpty(user.profile.avatar)
-							? config.settings.publicDir + user.profile.avatar
-							: null)
-				)
-			} else {
-				data.profile.avatar = !_.isEmpty(data.profile.avatar)
-					? config.settings.publicDir + data.profile.avatar
-					: null
-			}
-		}
-		return data
 	}
 }
