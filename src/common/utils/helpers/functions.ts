@@ -1,4 +1,5 @@
 import * as _ from 'lodash'
+import { config } from '../../../config'
 
 function generateSignupCode(): number {
 	return generateRandomNumber()
@@ -41,11 +42,16 @@ function emailMask(email: string): string {
 	return maskedEmail.join('')
 }
 
+function fixLink(link: string): string {
+	return link && config.settings.publicDir + link
+}
+
 export {
 	generateSignupCode,
 	generateUsernameFromEmail,
 	generateRandomName,
 	generateRandomString,
 	slugify,
-	emailMask
+	emailMask,
+	fixLink
 }
