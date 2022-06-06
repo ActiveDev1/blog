@@ -4,6 +4,7 @@ import { UserRepository } from '../user/users.repository'
 import { PostRepository } from '../post/post.repository'
 import { UserFile } from '../shared/interfaces/user-file.interface'
 import { PostNotFound } from 'src/shared/errors/post-not-found'
+import * as _ from 'lodash'
 
 @Injectable()
 export class UploadService {
@@ -20,7 +21,11 @@ export class UploadService {
 			parentDir: 'users/avatars',
 			objectName: avatar
 		})
-		await this.userRepository.updateAvatar(userId, fileDirectory)
+
+		if (!_.isEmpty(fileDirectory)) {
+			await this.userRepository.updateAvatar(userId, fileDirectory)
+		}
+
 		return url
 	}
 
@@ -41,7 +46,10 @@ export class UploadService {
 			objectName: post.cover
 		})
 
-		await this.postRepository.updateCover(postId, fileDirectory)
+		if (!_.isEmpty(fileDirectory)) {
+			await this.postRepository.updateCover(postId, fileDirectory)
+		}
+
 		return url
 	}
 }
