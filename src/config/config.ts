@@ -1,5 +1,6 @@
 import { MailerOptions } from '@nestjs-modules/mailer'
 import { JwtModuleOptions } from '@nestjs/jwt'
+import { NestMinioOptions } from 'nestjs-minio'
 import { RedisModuleOptions } from 'nestjs-redis'
 import * as path from 'path'
 import * as env from '../common/utils/environment'
@@ -26,7 +27,12 @@ export const config = {
 		}
 	},
 	settings: {
-		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5)
+		publicDir: env.str('PUBLIC_DIR', 'http://localhost:9000/blog/'),
+		signupCodeExpireTime: env.num('SIGNUP_CODE_EXPIRE_TIME', 60 * 5),
+		upload: {
+			maxAvatarFileSize: env.num('AVATAR_FILE_SIZE_LIMIT', 1 * 1024 * 1024),
+			maxPostCoverFileSize: env.num('POST_COVER_FILE_SIZE_LIMIT', 3 * 1024 * 1024)
+		}
 	}
 }
 
@@ -67,4 +73,15 @@ export const mailerConfig: MailerOptions = {
 	defaults: {
 		from: env.str('MAILER_FROM_DEFAULT', '"No Reply" <noreply@example.com>')
 	}
+}
+
+export const NestMinioConfigs = {
+	config: {
+		endPoint: env.str('MINIO_ENDPOINT', '127.0.0.1'),
+		port: env.num('MINIO_PORT', 9000),
+		useSSL: env.bool('MINIO_SSL', false),
+		accessKey: env.str('MINIO_ACCESS_KEY', 'minioadmin'),
+		secretKey: env.str('MINIO_SECRET_KEY', 'minioadmin')
+	} as NestMinioOptions,
+	bucket: env.str('MINIO_BUCKET_NAME', 'blog')
 }

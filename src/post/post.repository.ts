@@ -27,8 +27,7 @@ export class PostRepository {
 
 	async findAllByUserId(userId: string, options?: PostWhereOptions) {
 		return await this.prisma.post.findMany({
-			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) },
-			include: { author: true }
+			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) }
 		})
 	}
 
@@ -37,6 +36,10 @@ export class PostRepository {
 			where: { id },
 			data: { ...updatePostDto }
 		})
+	}
+
+	async updateCover(id: string, cover: string) {
+		return await this.prisma.post.update({ where: { id }, data: { cover } })
 	}
 
 	async deleteOne(id: string) {

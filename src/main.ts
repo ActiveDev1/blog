@@ -6,6 +6,7 @@ import { config } from './config'
 import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
 import { ValidationException, ValidationFilter } from './shared/filters/validation.filter'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { contentParser } from 'fastify-multer/lib'
 
 async function bootstrap() {
 	const { enabled, prettyPrint } = config.logger.server
@@ -16,6 +17,7 @@ async function bootstrap() {
 		})
 	)
 
+	app.register(contentParser)
 	app.setGlobalPrefix('api')
 	app.useGlobalInterceptors(new TransformInterceptor())
 	app.useGlobalFilters(new ValidationFilter())

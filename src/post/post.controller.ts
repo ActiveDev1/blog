@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, UseGuards, Patch, Delete } from '@nestjs/common'
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Param,
+	UseGuards,
+	Patch,
+	Delete,
+	UseInterceptors
+} from '@nestjs/common'
 import { PostService } from './post.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import {
@@ -19,6 +29,7 @@ import { UpdatePostDto } from './dto/update-post.dto'
 import { PostResponseDto } from './dto/responses/response.post.dto'
 import { UserPostsResponseDto } from './dto/responses/response.user.posts.dto'
 import { GetIdParam } from '../shared/dtos/get-id-param.dto'
+import { LinkFixerInterceptor } from 'src/shared/interceptors/link-fixer.interceptor'
 
 @ApiTags('Post')
 @Controller('posts')
@@ -38,6 +49,7 @@ export class PostController {
 
 	@Get('author/:authorId')
 	@Public()
+	@UseInterceptors(LinkFixerInterceptor('posts'))
 	@ApiNotFoundResponse({
 		description: 'User not found'
 	})
@@ -50,6 +62,7 @@ export class PostController {
 
 	@Get(':id')
 	@Public()
+	@UseInterceptors(LinkFixerInterceptor('post'))
 	@ApiNotFoundResponse({
 		description: 'Post not found'
 	})

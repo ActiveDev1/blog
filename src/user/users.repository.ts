@@ -64,7 +64,17 @@ export class UserRepository {
 	}
 
 	async findOneWithProfile(id: string) {
-		return await this.findById(id, { select: { ...this.defaultOptions.select, profile: true } })
+		return await this.findById(id, {
+			select: { ...this.defaultOptions.select, profile: true }
+		})
+	}
+
+	async findOneProfile(userId: string) {
+		return await this.prisma.profile.findFirst({ where: { userId } })
+	}
+
+	async findPosts(id: string) {
+		return await this.findById(id, { select: { posts: true } })
 	}
 
 	async updateOne(id: string, data: UpdateUserDto) {
@@ -81,6 +91,10 @@ export class UserRepository {
 
 	async updateEmail(id: string, email: string) {
 		return await this.updateById(id, { email })
+	}
+
+	async updateAvatar(id: string, avatar: string) {
+		return await this.prisma.profile.update({ where: { userId: id }, data: { avatar } })
 	}
 
 	async getCount(where: Prisma.UserWhereUniqueInput) {

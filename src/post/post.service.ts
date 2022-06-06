@@ -1,18 +1,17 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { CreatePostDto } from './dto/create-post.dto'
 import { PostRepository } from './post.repository'
-import * as _ from 'lodash'
 import { generateRandomString, slugify } from '../common/utils/helpers/functions'
 import { Post, User } from '@prisma/client'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { WherePost } from './interfaces/where-post.interface'
-import { PostNotFound } from 'src/shared/errors/post-not-found'
-import { UserRepository } from 'src/user/users.repository'
-import { UserNotFound } from 'src/shared/errors/user-not-found'
+import { PostNotFound } from '../shared/errors/post-not-found'
+import { UserNotFound } from '../shared/errors/user-not-found'
+import * as _ from 'lodash'
 
 @Injectable()
 export class PostService {
-	constructor(private postRepository: PostRepository, private userRepository: UserRepository) {}
+	constructor(private postRepository: PostRepository) {}
 
 	async create(createPostDto: CreatePostDto, user: User): Promise<Post> {
 		const { slug, title } = createPostDto
@@ -24,8 +23,8 @@ export class PostService {
 		return await this.postRepository.create(createPostDto, user.id)
 	}
 
-	async findAll(userId: string): Promise<Partial<User>> {
-		const user = await this.userRepository.findOneWithProfileAndPosts(userId)
+	async findAll(userId: string) {
+		const user = await this.postRepository.findAllByUserId(userId)
 		if (!user) {
 			throw new UserNotFound()
 		}

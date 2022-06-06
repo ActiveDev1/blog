@@ -5,8 +5,19 @@ import { PrismaModule } from './prisma/prisma.module'
 import { AuthModule } from './auth/auth.module'
 import { RedisModule } from './redis/redis.module'
 import { MailModule } from './mail/mail.module'
+import { MinioModule } from './minio/minio.module'
+import { UploadModule } from './upload/upload.module'
 
 @Module({
-	imports: [AuthModule, PrismaModule, RedisModule, MailModule, UserModule, PostModule]
+	imports: [
+		AuthModule,
+		PrismaModule,
+		RedisModule,
+		MailModule,
+		UserModule,
+		PostModule,
+		MinioModule,
+		UploadModule
+	]
 })
 export class AppModule {}
