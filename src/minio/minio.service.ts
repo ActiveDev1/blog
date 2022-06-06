@@ -70,6 +70,6 @@ export class MinioService implements OnModuleInit {
 	}
 
 	private getObjectName(dir: dirType, fileName: string) {
-		return `${dir}/${fileName}`
+		return fileName || `${dir}/${this.editFileName(fileName)}`
 	}
 }
