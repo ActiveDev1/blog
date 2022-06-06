@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { Post } from '@prisma/client'
 import { PrismaService } from '../prisma/prisma.service'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { config } from '../config'
-import * as _ from 'lodash'
 
 interface PostWhereOptions {
 	isPublished?: boolean
@@ -30,8 +27,7 @@ export class PostRepository {
 
 	async findAllByUserId(userId: string, options?: PostWhereOptions) {
 		return await this.prisma.post.findMany({
-			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) },
-			include: { author: true }
+			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) }
 		})
 	}
 
