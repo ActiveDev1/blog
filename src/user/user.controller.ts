@@ -7,7 +7,8 @@ import {
 	Param,
 	Patch,
 	Post,
-	UseGuards
+	UseGuards,
+	UseInterceptors
 } from '@nestjs/common'
 import { UserService } from './user.service'
 import { ApiTags } from '@nestjs/swagger'
@@ -20,6 +21,7 @@ import { GetUser } from 'src/shared/decorators/get-user.decorator'
 import { User } from '@prisma/client'
 import { GetUserInfoDto } from './dtos/get-user-info.dto'
 import { GetEmailVerificationDto } from 'src/auth/dtos/get-email-verification.dto'
+import { LinkFixerInterceptor } from 'src/shared/interceptors/link-fixer.interceptor'
 
 @ApiTags('User')
 @Controller('users')
@@ -35,11 +37,13 @@ export class UserController {
 
 	@Get(':id/profile')
 	@Public()
+	@UseInterceptors(LinkFixerInterceptor('user'))
 	async findOneProfile(@Param() param: GetIdParam) {
 		return await this.userService.findOneProfile(param.id)
 	}
 
 	@Get('posts')
+	@UseInterceptors(LinkFixerInterceptor('user'))
 	async findOnePosts(@GetUser() user: User) {
 		return await this.userService.findOnePosts(user.id)
 	}
