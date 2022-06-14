@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../../modules/services/prisma/prisma.service'
-import { CreatePostDto } from './dto/create-post.dto'
-import { UpdatePostDto } from './dto/update-post.dto'
+import { PrismaService } from '../../services/prisma/prisma.service'
+import { CreatePostDto } from '../dto/create-post.dto'
+import { UpdatePostDto } from '../dto/update-post.dto'
 
 interface PostWhereOptions {
 	isPublished?: boolean

@@ -7,7 +7,7 @@ import { generateRandomString, slugify } from '../../shared/utils/helpers/functi
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { WherePost } from './interfaces/where-post.interface'
-import { PostRepository } from './post.repository'
+import { PostRepository } from './repositories/post.repository'
 
 @Injectable()
 export class PostService {

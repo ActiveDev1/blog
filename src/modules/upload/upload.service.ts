@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 import { PostNotFound } from '../../shared/errors/post-not-found'
 import { MinioService } from '../../modules/services/minio/minio.service'
 import { UserFile } from '../../shared/interfaces/user-file.interface'
-import { PostRepository } from '../post/post.repository'
+import { PostRepository } from '../post/repositories/post.repository'
 import { UserRepository } from '../user/users.repository'
 
 @Injectable()

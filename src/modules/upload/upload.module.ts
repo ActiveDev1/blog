@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { PostRepository } from '../../modules/post/post.repository'
+import { PostRepository } from '../post/repositories/post.repository'
 import { MinioModule } from '../../modules/services/minio/minio.module'
 import { UserRepository } from '../../modules/user/users.repository'
 import { UploadController } from './upload.controller'
