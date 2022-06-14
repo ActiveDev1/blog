@@ -103,4 +103,16 @@ export class PostController {
 	async delete(@Param() param: GetIdParam, @GetUser() user: User) {
 		return await this.postService.delete({ id: param.id, authorId: user.id })
 	}
+
+	@Post(':id/like')
+	async like(@Param() param: GetIdParam, @GetUser() user: User) {
+		return await this.postService.like({ postId: param.id, userId: user.id })
+	}
+
+	@Get(':id/like/users')
+	@Public()
+	@UseInterceptors(LinkFixerInterceptor('users'))
+	async getUserLikes(@Param() param: GetIdParam) {
+		return await this.postService.getUserLikes(param.id)
+	}
 }
