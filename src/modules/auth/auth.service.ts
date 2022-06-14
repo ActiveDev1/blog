@@ -47,7 +47,7 @@ export class AuthService {
 	async signup(body: GetEmailVerificationDto): Promise<Tokens> {
 		const { email } = body
 
-		if (this.checkVerificationCode(body)) {
+		if (await this.checkVerificationCode(body)) {
 			throw new WrongVerificationCode()
 		}
 
