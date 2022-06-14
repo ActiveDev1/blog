@@ -1,17 +1,17 @@
 import {
-	Injectable,
-	NestInterceptor,
-	ExecutionContext,
 	CallHandler,
+	ExecutionContext,
+	Injectable,
 	mixin,
+	NestInterceptor,
 	Type
 } from '@nestjs/common'
-import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
-import { fixLink } from '../../common/utils/helpers/functions'
-import { IUser } from '../../common/interfaces/user-profile.interface'
 import { Post } from '@prisma/client'
 import { isEmpty } from 'lodash'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { IUser } from '../../shared/interfaces/user-profile.interface'
+import { fixLink } from '../../shared/utils/helpers/functions'
 
 type DataType = 'user' | 'users' | 'post' | 'posts'
 const dataTypes = {

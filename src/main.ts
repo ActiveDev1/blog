@@ -1,12 +1,12 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
 import { ValidationError, ValidationPipe } from '@nestjs/common'
-import { config } from './config'
-import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
-import { ValidationException, ValidationFilter } from './shared/filters/validation.filter'
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { NestFactory } from '@nestjs/core'
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { contentParser } from 'fastify-multer/lib'
+import { AppModule } from './app.module'
+import { config } from './shared/config'
+import { ValidationException, ValidationFilter } from './shared/filters/validation.filter'
+import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
 
 async function bootstrap() {
 	const { enabled, prettyPrint } = config.logger.server
