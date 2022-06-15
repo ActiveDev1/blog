@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { User } from '@prisma/client'
 import * as _ from 'lodash'
-import { UserNotFound } from 'src/shared/errors/user-not-found'
+import { UserNotFound } from '../../shared/errors/user-not-found'
 import { hashPassword, verifyPassword } from '../../shared/utils/argon2'
 import { AuthService } from '../auth/auth.service'
 import { GetEmailVerificationDto } from '../auth/dtos/get-email-verification.dto'
