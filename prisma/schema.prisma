@@ -69,7 +69,7 @@ model Post_Comment {
   content     String         @db.Text()
   subComments Post_Comment[] @relation("Comment_Children")
   parent      Post_Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
-  parentId    String
+  parentId    String?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 }
