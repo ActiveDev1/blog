@@ -44,4 +44,12 @@ export class PostCommentRepository {
 			}
 		})
 	}
+
+	async updateOne(id: string, content: string) {
+		return await this.prisma.post_Comment.update({ where: { id }, data: { content } })
+	}
+
+	async deleteOne(id: string) {
+		return await this.prisma.post_Comment.delete({ where: { id } })
+	}
 }
