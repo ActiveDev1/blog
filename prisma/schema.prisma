@@ -11,17 +11,18 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(cuid())
-  name        String
-  email       String      @unique
-  username    String      @unique
-  password    String?
-  profile     Profile?
-  posts       Post[]
-  posts_likes Post_Like[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  deletedAt   DateTime?
+  id             String         @id @default(cuid())
+  name           String
+  email          String         @unique
+  username       String         @unique
+  password       String?
+  profile        Profile?
+  posts          Post[]
+  posts_likes    Post_Like[]
+  posts_comments Post_Comment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
 }
 
 model Profile {
@@ -34,18 +35,19 @@ model Profile {
 }
 
 model Post {
-  id          String      @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
-  body        String      @db.Text()
+  body        String         @db.Text()
   description String?
-  slug        String      @unique
+  slug        String         @unique
   cover       String?
-  isPublished Boolean     @default(false)
-  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  isPublished Boolean        @default(false)
+  author      User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId    String
   likes       Post_Like[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  comments    Post_Comment[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
   deletedAt   DateTime?
 }
 
@@ -56,4 +58,18 @@ model Post_Like {
   postId String
 
   @@id([userId, postId])
+}
+
+model Post_Comment {
+  id          String         @id @default(cuid())
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  post        Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String
+  content     String         @db.Text()
+  subComments Post_Comment[] @relation("Comment_Children")
+  parent      Post_Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parentId    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
