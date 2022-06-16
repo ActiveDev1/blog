@@ -115,4 +115,10 @@ export class PostController {
 	async getUserLikes(@Param() param: GetIdParam) {
 		return await this.postService.getUserLikes(param.id)
 	}
+
+	@Get(':id/likes')
+	@Public()
+	async getLikesCount(@Param() param: GetIdParam) {
+		return await this.postService.getLikesCount(param.id)
+	}
 }

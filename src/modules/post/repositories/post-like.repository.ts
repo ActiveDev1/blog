@@ -35,6 +35,12 @@ export class PostLikeRepository {
 		})
 	}
 
+	async count(postId: string) {
+		return await this.prisma.post_Like.count({
+			where: { postId }
+		})
+	}
+
 	async deleteOne(where: WherePostLike) {
 		return await this.prisma.post_Like.delete({
 			where: { userId_postId: where }

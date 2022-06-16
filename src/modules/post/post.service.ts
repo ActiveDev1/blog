@@ -101,4 +101,9 @@ export class PostService {
 		const users = likes.map((like) => like.user)
 		return users
 	}
+
+	async getLikesCount(id: string) {
+		const count = await this.postLikeRepository.count(id)
+		return { likes: count }
+	}
 }
