@@ -46,6 +46,14 @@ function fixLink(link: string): string {
 	return link && config.settings.publicDir + link
 }
 
+function getMentionedUsernames(text: string) {
+	return [...text.matchAll(/@(\w*)/g)].map((matchArray) => matchArray[1])
+}
+
+function truncateString(text: string, num: number = 30) {
+	return text.length <= num ? text : text.slice(0, num) + '...'
+}
+
 export {
 	generateSignupCode,
 	generateUsernameFromEmail,
@@ -53,5 +61,7 @@ export {
 	generateRandomString,
 	slugify,
 	emailMask,
-	fixLink
+	fixLink,
+	getMentionedUsernames,
+	truncateString
 }

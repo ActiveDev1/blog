@@ -40,7 +40,7 @@ export class AuthService {
 		const signupCode = generateSignupCode()
 		await Promise.all([
 			this.redisService.addVerificationCode(email, signupCode),
-			this.mailService.sendUserConfirmation(email, signupCode)
+			this.mailService.sendUserConfirmation({ receiver: { email }, code: signupCode })
 		])
 	}
 

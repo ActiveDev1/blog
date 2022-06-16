@@ -1,6 +1,8 @@
+import { User } from '@prisma/client'
+
 export interface CreateComment {
 	postId: string
-	userId: string
+	user: User
 	parentId: string
 	content: string
 }

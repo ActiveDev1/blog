@@ -33,7 +33,7 @@ export class PostCommentController {
 			postId: param.id,
 			parentId: body.parentId,
 			content: body.content,
-			userId: user.id
+			user
 		})
 	}
 

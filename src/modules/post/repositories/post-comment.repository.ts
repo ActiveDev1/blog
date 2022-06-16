@@ -8,8 +8,9 @@ export class PostCommentRepository {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async create(createComment: CreateComment) {
+		const { content, parentId, postId, user } = createComment
 		return await this.prisma.post_Comment.create({
-			data: { ...createComment }
+			data: { content, parentId, postId, userId: user.id }
 		})
 	}
 

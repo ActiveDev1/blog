@@ -41,6 +41,10 @@ export class UserRepository {
 		return await this.findOne({ username })
 	}
 
+	async findAllByUsernames(usernames: string[]) {
+		return await this.prisma.user.findMany({ where: { username: { in: usernames } } })
+	}
+
 	async findOneWithProfileAndPosts(id: string) {
 		const postFindMany: Prisma.PostFindManyArgs = {
 			select: {

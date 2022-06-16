@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common'
+import { MailModule } from '../services/mail/mail.module'
+import { UserRepository } from '../user/users.repository'
 import { PostCommentController } from './post-comment.controller'
 import { PostCommentService } from './post-comment.service'
 import { PostController } from './post.controller'
@@ -8,13 +10,15 @@ import { PostLikeRepository } from './repositories/post-like.repository'
 import { PostRepository } from './repositories/post.repository'
 
 @Module({
+	imports: [MailModule],
 	controllers: [PostController, PostCommentController],
 	providers: [
 		PostService,
 		PostCommentService,
 		PostRepository,
 		PostCommentRepository,
-		PostLikeRepository
+		PostLikeRepository,
+		UserRepository
 	]
 })
 export class PostModule {}
