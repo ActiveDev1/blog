@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
-import { Post_Comment } from '@prisma/client'
-import { getMentionedUsernames, truncateString } from '../../shared/utils/helpers/functions'
+import { Post_Comment, User } from '@prisma/client'
 import { PostNotFound } from '../../shared/errors/post-not-found'
+import { getMentionedUsernames, truncateString } from '../../shared/utils/helpers/functions'
 import { MailService } from '../services/mail/mail.service'
 import { UserRepository } from '../user/users.repository'
 import { CommentNotFound } from './errors/comment-not-found'
@@ -22,6 +22,7 @@ export class PostCommentService {
 
 	async create(createComment: CreateComment): Promise<Post_Comment> {
 		const { postId, parentId, content, user } = createComment
+		let repliedUser: User
 
 		const post = await this.postRepository.findById(postId)
 		if (!post) {
@@ -30,6 +31,8 @@ export class PostCommentService {
 
 		if (parentId) {
 			const parentComment = await this.postCommentRepository.findById(parentId)
+			repliedUser = parentComment ? parentComment.user : null
+
 			if (!parentComment) {
 				throw new CommentNotFound()
 			}
@@ -44,15 +47,21 @@ export class PostCommentService {
 
 		const mentionedUsers = await this.userRepository.findAllByUsernames(mentionedUsernames)
 
-		await Promise.allSettled(
-			mentionedUsers.map(({ email, name }) =>
-				this.mailService.sendMentionedOnComment({
-					ownerName: user.name,
-					receiver: { email, name },
-					truncatedComment
-				})
-			)
+		const emailToMentionedUsers = mentionedUsers.map(({ email, name }) =>
+			this.mailService.sendMentionedOnComment({
+				ownerName: user.name,
+				receiver: { email, name },
+				truncatedComment
+			})
 		)
+
+		const emailRoRepliedUser = this.mailService.sendReplyComment({
+			ownerName: user.name,
+			receiver: { email: repliedUser.email, name: repliedUser.name },
+			truncatedComment
+		})
+
+		await Promise.allSettled([...emailToMentionedUsers, emailRoRepliedUser])
 
 		return await this.postCommentRepository.create(createComment)
 	}

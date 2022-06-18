@@ -16,7 +16,8 @@ export class PostCommentRepository {
 
 	async findById(id: string) {
 		return await this.prisma.post_Comment.findUnique({
-			where: { id }
+			where: { id },
+			include: { user: true }
 		})
 	}
 

@@ -18,6 +18,19 @@ export class MailService {
 		})
 	}
 
+	async sendReplyComment({ ownerName, receiver, truncatedComment }: CommentMention) {
+		await this.mailerService.sendMail({
+			to: receiver.email,
+			subject: 'Someone replied to your comment',
+			template: 'reply-comment',
+			context: {
+				ownerName,
+				receiverName: receiver.name,
+				truncatedComment
+			}
+		})
+	}
+
 	async sendMentionedOnComment({ ownerName, receiver, truncatedComment }: CommentMention) {
 		await this.mailerService.sendMail({
 			to: receiver.email,
