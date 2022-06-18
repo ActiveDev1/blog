@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'
 import { Transform } from 'class-transformer'
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import {
+	ArrayMaxSize,
+	ArrayMinSize,
+	IsArray,
+	IsBoolean,
+	IsNotEmpty,
+	IsOptional,
+	IsString
+} from 'class-validator'
 
 export class CreatePostDto {
 	@IsString()
@@ -24,6 +32,11 @@ export class CreatePostDto {
 	@Transform(({ value }) => value?.trim())
 	@ApiPropertyOptional()
 	slug: string
+
+	@ArrayMinSize(1)
+	@ArrayMaxSize(3)
+	@IsArray()
+	categories: string[]
 
 	@IsBoolean()
 	@IsOptional()

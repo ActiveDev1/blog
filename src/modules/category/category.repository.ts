@@ -16,6 +16,12 @@ export class CategoryRepository {
 		return await this.prisma.category.findUnique({ where: { id } })
 	}
 
+	async hasExistsWithIds(ids: string[]) {
+		return (
+			(await this.prisma.category.findMany({ where: { id: { in: ids } } })).length === ids.length
+		)
+	}
+
 	async findBySlug(slug: string) {
 		return await this.prisma.category.findUnique({ where: { slug } })
 	}

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../../services/prisma/prisma.service'
-import { CreatePostDto } from '../dto/create-post.dto'
-import { UpdatePostDto } from '../dto/update-post.dto'
+import { CreatePost } from '../interfaces/create-post.interface'
+import { UpdatePost } from '../interfaces/update-post.interface'
 
 interface PostWhereOptions {
 	isPublished?: boolean
@@ -13,9 +13,9 @@ export class PostRepository {
 
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create(createPostDto: CreatePostDto, authorId: string) {
+	async create(createPost: CreatePost, authorId: string) {
 		return await this.prisma.post.create({
-			data: { ...createPostDto, cover: '', authorId }
+			data: { ...createPost, authorId, categories: { create: createPost.categories } }
 		})
 	}
 
@@ -31,10 +31,10 @@ export class PostRepository {
 		})
 	}
 
-	async updateOne(id: string, updatePostDto: UpdatePostDto) {
+	async updateOne(id: string, updatePost: UpdatePost) {
 		return await this.prisma.post.update({
 			where: { id },
-			data: { ...updatePostDto }
+			data: { ...updatePost, categories: { create: updatePost.categories } }
 		})
 	}
 
@@ -43,6 +43,6 @@ export class PostRepository {
 	}
 
 	async deleteOne(id: string) {
-		return await this.updateOne(id, { deletedAt: new Date() } as UpdatePostDto)
+		return await this.updateOne(id, { deletedAt: new Date() } as UpdatePost)
 	}
 }

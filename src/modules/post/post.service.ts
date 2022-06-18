@@ -4,8 +4,10 @@ import * as _ from 'lodash'
 import { PostNotFound } from '../../shared/errors/post-not-found'
 import { UserNotFound } from '../../shared/errors/user-not-found'
 import { generateRandomString, slugify } from '../../shared/utils/helpers/functions'
+import { CategoryRepository } from '../category/category.repository'
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
+import { InvalidCategory } from './errors/invalid-category'
 import { WherePostLike } from './interfaces/where-post-like.interface'
 import { WherePost } from './interfaces/where-post.interface'
 import { PostLikeRepository } from './repositories/post-like.repository'
@@ -15,17 +17,24 @@ import { PostRepository } from './repositories/post.repository'
 export class PostService {
 	constructor(
 		private readonly postRepository: PostRepository,
-		private readonly postLikeRepository: PostLikeRepository
+		private readonly postLikeRepository: PostLikeRepository,
+		private readonly categoryRepository: CategoryRepository
 	) {}
 
 	async create(createPostDto: CreatePostDto, user: User): Promise<Post> {
 		const { slug, title } = createPostDto
-		const randomString = generateRandomString()
 
+		const validCategories = await this.categoryRepository.hasExistsWithIds(createPostDto.categories)
+		if (!validCategories) {
+			throw new InvalidCategory()
+		}
+
+		const randomString = generateRandomString()
 		createPostDto.slug = _.isNil(slug) || _.isEmpty(slug) ? slugify(title) : slugify(slug)
 		createPostDto.slug += `-${randomString}`
 
-		return await this.postRepository.create(createPostDto, user.id)
+		const categories = createPostDto.categories.map((categoryId) => ({ categoryId }))
+		return await this.postRepository.create({ ...createPostDto, categories }, user.id)
 	}
 
 	async findAll(userId: string) {
@@ -60,7 +69,19 @@ export class PostService {
 			updatePostDto.slug = slugify(updatePostDto.slug) + `-${randomString}`
 		}
 
-		return await this.postRepository.updateOne(id, updatePostDto)
+		if (!_.isEmpty(updatePostDto.categories)) {
+			const validCategories = await this.categoryRepository.hasExistsWithIds(
+				updatePostDto.categories
+			)
+
+			if (!validCategories) {
+				throw new InvalidCategory()
+			}
+		}
+
+		const categories = updatePostDto.categories.map((categoryId) => ({ categoryId }))
+
+		return await this.postRepository.updateOne(id, { ...updatePostDto, categories })
 	}
 
 	async delete({ id, authorId }: WherePost) {
