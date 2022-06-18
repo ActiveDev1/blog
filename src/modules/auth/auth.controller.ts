@@ -13,8 +13,12 @@ import {
 } from '@nestjs/swagger'
 import { User } from '@prisma/client'
 import { GetUser } from '../../shared/decorators/get-user.decorator'
+import { Role } from '../../shared/decorators/roles.decorator'
+import { Role as Roles } from '../../shared/enums/role.enum'
 import { AuthGuard } from '../../shared/guards/auth.guard'
+import { RolesGuard } from '../../shared/guards/roles.guard'
 import { AuthService } from './auth.service'
+import { CreateAdminDto } from './dtos/create-admin.dto'
 import { GetEmailCodeDto } from './dtos/get-email-code.dto'
 import { GetEmailPassDto } from './dtos/get-email-pass.dto'
 import { GetEmailVerificationDto } from './dtos/get-email-verification.dto'
@@ -26,6 +30,13 @@ import { Tokens } from './dtos/tokens.dto'
 @Controller('auth')
 export class AuthController {
 	constructor(private authService: AuthService) {}
+
+	@Post('signup/admin')
+	@UseGuards(AuthGuard(), RolesGuard)
+	@Role(Roles.ADMIN)
+	async signupAdmin(@Body() body: CreateAdminDto): Promise<Tokens> {
+		return await this.authService.signupAdmin(body)
+	}
 
 	@Post('code')
 	@ApiBody({ type: GetEmailDto })

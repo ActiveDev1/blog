@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../modules/services/prisma/prisma.service'
 import { UpdateUserDto } from './dtos/update-user.dto'
-import { UserPersonalData } from './interfaces/create-user.interface'
 
 @Injectable()
 export class UserRepository {
@@ -12,9 +11,9 @@ export class UserRepository {
 
 	constructor(private readonly prisma: PrismaService) {}
 
-	async create({ email, name, username }: UserPersonalData) {
+	async create(data: Prisma.UserCreateInput) {
 		return await this.prisma.user.create({
-			data: { email, name, username, profile: { create: {} } }
+			data: { ...data, profile: { create: {} } }
 		})
 	}
 
@@ -103,5 +102,9 @@ export class UserRepository {
 
 	async getCount(where: Prisma.UserWhereUniqueInput) {
 		return await this.prisma.user.count({ where })
+	}
+
+	async checkExists(email: string, username: string) {
+		return await this.prisma.user.findFirst({ where: { OR: [{ email }, { username }] } })
 	}
 }
