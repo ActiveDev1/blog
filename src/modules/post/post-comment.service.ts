@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { Post_Comment } from '@prisma/client'
-import { getMentionedUsernames, truncateString } from 'src/shared/utils/helpers/functions'
+import { getMentionedUsernames, truncateString } from '../../shared/utils/helpers/functions'
 import { PostNotFound } from '../../shared/errors/post-not-found'
 import { MailService } from '../services/mail/mail.service'
 import { UserRepository } from '../user/users.repository'

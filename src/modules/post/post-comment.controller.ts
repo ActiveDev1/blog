@@ -13,11 +13,11 @@ import {
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { User } from '@prisma/client'
-import { LinkFixerInterceptor } from 'src/shared/interceptors/link-fixer.interceptor'
 import { GetUser } from '../../shared/decorators/get-user.decorator'
 import { Public } from '../../shared/decorators/public.decorator'
 import { GetIdParam } from '../../shared/dtos/get-id-param.dto'
 import { AuthGuard } from '../../shared/guards/auth.guard'
+import { LinkFixerInterceptor } from '../../shared/interceptors/link-fixer.interceptor'
 import { CreateCommentDto } from './dto/create-comment.dto'
 import { PostCommentService } from './post-comment.service'
 
