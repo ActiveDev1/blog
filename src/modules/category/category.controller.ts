@@ -10,7 +10,7 @@ import {
 	Post,
 	UseGuards
 } from '@nestjs/common'
-import { GetIdParam } from 'src/shared/dtos/get-id-param.dto'
+import { GetIdParam } from '../../shared/dtos/get-id-param.dto'
 import { Role } from '../../shared/decorators/roles.decorator'
 import { Role as Roles } from '../../shared/enums/role.enum'
 import { AuthGuard } from '../../shared/guards/auth.guard'
