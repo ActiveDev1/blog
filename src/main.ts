@@ -8,6 +8,8 @@ import { config } from './shared/config'
 import { ValidationException, ValidationFilter } from './shared/filters/validation.filter'
 import { TransformInterceptor } from './shared/interceptors/response-transform.interceptor'
 
+declare const module: any
+
 async function bootstrap() {
 	const { enabled, prettyPrint } = config.logger.server
 	const app = await NestFactory.create<NestFastifyApplication>(
@@ -41,6 +43,11 @@ async function bootstrap() {
 		.build()
 	const document = SwaggerModule.createDocument(app, configDocument)
 	SwaggerModule.setup('swagger', app, document)
+
+	if (module.hot) {
+		module.hot.accept()
+		module.hot.dispose(() => app.close())
+	}
 
 	await app.listen(config.server.restApi.port, config.server.restApi.host)
 }
