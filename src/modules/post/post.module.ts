@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { CategoryRepository } from '../category/category.repository'
 import { MailModule } from '../services/mail/mail.module'
@@ -11,7 +12,7 @@ import { PostLikeRepository } from './repositories/post-like.repository'
 import { PostRepository } from './repositories/post.repository'
 
 @Module({
-	imports: [MailModule],
+	imports: [BullModule.registerQueue({ name: 'mailer' })],
 	controllers: [PostController, PostCommentController],
 	providers: [
 		PostService,

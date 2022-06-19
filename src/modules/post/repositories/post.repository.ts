@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../services/prisma/prisma.service'
 import { CreatePost } from '../interfaces/create-post.interface'
+import { IPost } from '../interfaces/post.interface'
 import { UpdatePost } from '../interfaces/update-post.interface'
-
-interface PostWhereOptions {
-	isPublished?: boolean
-}
 
 @Injectable()
 export class PostRepository {
-	defaultWhereOption: PostWhereOptions = { isPublished: true }
+	defaultWhere: Prisma.PostWhereInput = { deletedAt: null, isPublished: true }
 
 	constructor(private readonly prisma: PrismaService) {}
 
@@ -19,15 +17,20 @@ export class PostRepository {
 		})
 	}
 
-	async findById(id: string, options?: PostWhereOptions) {
+	async findById(id: string, includeOption?: Prisma.PostInclude) {
 		return await this.prisma.post.findFirst({
-			where: { id, deletedAt: null, ...(options && this.defaultWhereOption) }
+			where: { id, ...this.defaultWhere },
+			include: includeOption
 		})
 	}
 
-	async findAllByUserId(userId: string, options?: PostWhereOptions) {
+	async findOneWithAuthor(id: string) {
+		return (await this.findById(id, { author: true })) as IPost
+	}
+
+	async findAllByUserId(userId: string) {
 		return await this.prisma.post.findMany({
-			where: { authorId: userId, deletedAt: null, ...(options || this.defaultWhereOption) }
+			where: { authorId: userId, ...this.defaultWhere }
 		})
 	}
 

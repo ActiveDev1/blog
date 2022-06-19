@@ -1,7 +1,8 @@
+import { InjectQueue } from '@nestjs/bull'
 import { Injectable, NotAcceptableException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { Queue } from 'bull'
 import * as _ from 'lodash'
-import { MailService } from '../../modules/services/mail/mail.service'
 import { RedisService } from '../../modules/services/redis/redis.service'
 import { refreshTokenConfig } from '../../shared/config'
 import { Role } from '../../shared/enums/role.enum'
@@ -36,7 +37,7 @@ export class AuthService {
 		private userRepository: UserRepository,
 		private redisService: RedisService,
 		private jwtService: JwtService,
-		private mailService: MailService
+		@InjectQueue('mailer') private mailQueue: Queue
 	) {}
 
 	async signupAdmin(body: CreateAdminDto): Promise<Tokens> {
@@ -61,7 +62,7 @@ export class AuthService {
 		const signupCode = generateSignupCode()
 		await Promise.all([
 			this.redisService.addVerificationCode(email, signupCode),
-			this.mailService.sendUserConfirmation({ receiver: { email }, code: signupCode })
+			this.mailQueue.add('user-confirmation', { receiver: { email }, code: signupCode })
 		])
 	}
 

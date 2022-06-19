@@ -1,5 +1,6 @@
 import { MailerOptions } from '@nestjs-modules/mailer'
 import { JwtModuleOptions } from '@nestjs/jwt'
+import Bull from 'bull'
 import { NestMinioOptions } from 'nestjs-minio'
 import { RedisModuleOptions } from 'nestjs-redis'
 import * as path from 'path'
@@ -84,4 +85,12 @@ export const NestMinioConfigs = {
 		secretKey: env.str('MINIO_SECRET_KEY', 'minioadmin')
 	} as NestMinioOptions,
 	bucket: env.str('MINIO_BUCKET_NAME', 'blog')
+}
+
+export const bullOptions: Bull.QueueOptions = {
+	redis: redisConfig,
+	defaultJobOptions: {
+		removeOnComplete: true,
+		removeOnFail: true
+	}
 }

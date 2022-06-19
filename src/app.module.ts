@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { AuthModule } from './modules/auth/auth.module'
 import { CategoryModule } from './modules/category/category.module'
@@ -8,9 +9,11 @@ import { PrismaModule } from './modules/services/prisma/prisma.module'
 import { RedisModule } from './modules/services/redis/redis.module'
 import { UploadModule } from './modules/upload/upload.module'
 import { UserModule } from './modules/user/user.module'
+import { bullOptions } from './shared/config'
 
 @Module({
 	imports: [
+		BullModule.forRoot(bullOptions),
 		AuthModule,
 		PrismaModule,
 		RedisModule,

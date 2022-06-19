@@ -1,6 +1,6 @@
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
-import { MailModule } from '../../modules/services/mail/mail.module'
 import { RedisModule } from '../../modules/services/redis/redis.module'
 import { jwtConfig } from '../../shared/config'
 import { UserRepository } from '../user/users.repository'
@@ -10,7 +10,11 @@ import { JwtStrategy } from './strategies/jwt.strategy'
 import { RefreshStrategy } from './strategies/refresh.strategy'
 
 @Module({
-	imports: [JwtModule.register(jwtConfig), RedisModule, MailModule],
+	imports: [
+		BullModule.registerQueue({ name: 'mailer' }),
+		JwtModule.register(jwtConfig),
+		RedisModule
+	],
 	controllers: [AuthController],
 	providers: [AuthService, JwtStrategy, RefreshStrategy, UserRepository],
 	exports: [AuthService]

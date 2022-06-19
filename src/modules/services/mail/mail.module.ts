@@ -1,9 +1,10 @@
 import { MailerModule } from '@nestjs-modules/mailer'
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter'
+import { BullModule } from '@nestjs/bull'
 import { Module } from '@nestjs/common'
 import { join } from 'path'
 import { mailerConfig } from '../../../shared/config'
-import { MailService } from './mail.service'
+import { MailProcessor } from './mail.processor'
 
 @Module({
 	imports: [
@@ -18,7 +19,6 @@ import { MailService } from './mail.service'
 			}
 		})
 	],
-	providers: [MailService],
-	exports: [MailService]
+	providers: [MailProcessor]
 })
 export class MailModule {}
