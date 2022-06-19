@@ -90,6 +90,7 @@ export const NestMinioConfigs = {
 export const bullOptions: Bull.QueueOptions = {
 	redis: redisConfig,
 	defaultJobOptions: {
+		attempts: 3,
 		removeOnComplete: true,
 		removeOnFail: true
 	}
