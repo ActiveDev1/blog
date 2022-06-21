@@ -54,6 +54,9 @@ export class PostRepository {
 				this.prisma.post.findMany({
 					...args,
 					where: this.defaultWhere,
+					orderBy: {
+						createdAt: 'desc'
+					},
 					select: postSelect
 				}),
 			() => this.prisma.post.count({ where: this.defaultWhere }),

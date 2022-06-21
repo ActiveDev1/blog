@@ -1,18 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsNumber, IsOptional } from 'class-validator'
+import { IsOptional, IsPositive } from 'class-validator'
 
 export class ConnectionArgsDto {
 	@IsOptional()
-	@IsNumber()
 	@Type(() => Number)
 	@ApiProperty({ required: false })
+	@IsPositive()
 	first?: number
 
 	@IsOptional()
-	@IsNumber()
 	@Type(() => Number)
 	@ApiProperty({ required: false })
+	@IsPositive()
 	last?: number
 
 	@ApiProperty({ required: false })
