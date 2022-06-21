@@ -2,10 +2,11 @@ import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../services/prisma/prisma.service'
+import { ConnectionArgsDto } from '../dto/connection-args.dto'
+import { PaginationDto } from '../dto/pagination.dto'
 import { CreatePost } from '../interfaces/create-post.interface'
 import { IPost } from '../interfaces/post.interface'
 import { UpdatePost } from '../interfaces/update-post.interface'
-import { ConnectionArgs } from '../page/connection-args.dto'
 import postSelect from './queries/post-select'
 
 @Injectable()
@@ -31,15 +32,29 @@ export class PostRepository {
 		return (await this.findById(id, { author: true })) as IPost
 	}
 
-	async findPage(connectionArgs: ConnectionArgs) {
-		const postSelectWithAutor = postSelect
+	async findAllPublic({ page, limit }: PaginationDto) {
+		const [posts, postsCount] = await Promise.all([
+			this.prisma.post.findMany({
+				where: { ...this.defaultWhere },
+				select: postSelect,
+				orderBy: {
+					createdAt: 'desc'
+				},
+				skip: (page - 1) * limit,
+				take: limit
+			}),
+			this.prisma.post.count({ where: { ...this.defaultWhere } })
+		])
+		return { posts, postsCount }
+	}
 
+	async findPage(connectionArgs: ConnectionArgsDto) {
 		const postPage = await findManyCursorConnection(
 			(args) =>
 				this.prisma.post.findMany({
 					...args,
 					where: this.defaultWhere,
-					select: postSelectWithAutor
+					select: postSelect
 				}),
 			() => this.prisma.post.count({ where: this.defaultWhere }),
 			connectionArgs

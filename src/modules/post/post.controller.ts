@@ -25,12 +25,13 @@ import { Public } from '../../shared/decorators/public.decorator'
 import { GetIdParam } from '../../shared/dtos/get-id-param.dto'
 import { AuthGuard } from '../../shared/guards/auth.guard'
 import { LinkFixerInterceptor } from '../../shared/interceptors/link-fixer.interceptor'
+import { ConnectionArgsDto } from './dto/connection-args.dto'
 import { CreatePostDto } from './dto/create-post.dto'
 import { GetAuthorIdParam } from './dto/get-authorId-param.dto'
+import { PaginationDto } from './dto/pagination.dto'
 import { PostResponseDto } from './dto/responses/response.post.dto'
 import { UserPostsResponseDto } from './dto/responses/response.user.posts.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { ConnectionArgs } from './page/connection-args.dto'
 import { PostService } from './post.service'
 
 @ApiTags('Post')
@@ -51,8 +52,15 @@ export class PostController {
 
 	@Get('page')
 	@Public()
-	async findPage(@Query() connectionArgs: ConnectionArgs) {
+	async findPage(@Query() connectionArgs: ConnectionArgsDto) {
 		return this.postService.findPage(connectionArgs)
+	}
+
+	@Get()
+	@Public()
+	// @UseInterceptors(LinkFixerInterceptor('posts'))
+	async findPublics(@Query() query: PaginationDto) {
+		return await this.postService.findPublics(query)
 	}
 
 	@Get('author/:authorId')

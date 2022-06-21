@@ -5,12 +5,13 @@ import { PostNotFound } from '../../shared/errors/post-not-found'
 import { UserNotFound } from '../../shared/errors/user-not-found'
 import { generateRandomString, slugify } from '../../shared/utils/helpers/functions'
 import { CategoryRepository } from '../category/category.repository'
+import { ConnectionArgsDto } from './dto/connection-args.dto'
 import { CreatePostDto } from './dto/create-post.dto'
+import { PaginationDto } from './dto/pagination.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { InvalidCategory } from './errors/invalid-category'
 import { WherePostLike } from './interfaces/where-post-like.interface'
 import { WherePost } from './interfaces/where-post.interface'
-import { ConnectionArgs } from './page/connection-args.dto'
 import { PostLikeRepository } from './repositories/post-like.repository'
 import { PostRepository } from './repositories/post.repository'
 
@@ -38,8 +39,18 @@ export class PostService {
 		return await this.postRepository.create({ ...createPostDto, categories }, user.id)
 	}
 
-	async findPage(connectionArgs: ConnectionArgs) {
+	async findPage(connectionArgs: ConnectionArgsDto) {
 		return await this.postRepository.findPage(connectionArgs)
+	}
+
+	async findPublics(pagination: PaginationDto) {
+		const { page, limit } = pagination
+		const { posts, postsCount } = await this.postRepository.findAllPublic(pagination)
+		const pages = Math.ceil(postsCount / limit),
+			hasNext = page < pages,
+			hasPrev = page > 1
+
+		return { posts, pages, hasNext, hasPrev, postsCount }
 	}
 
 	async findAll(userId: string) {
