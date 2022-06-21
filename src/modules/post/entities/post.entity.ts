@@ -1,4 +1,5 @@
-import { Post_Category, Post_Comment, Post_Like, User } from '@prisma/client'
+import { Post_Category, Post_Comment, Post_Like } from '@prisma/client'
+import { IUser } from 'src/shared/interfaces/user-profile.interface'
 import { IPost } from '../interfaces/post.interface'
 
 export class PostEntity implements IPost {
@@ -10,7 +11,7 @@ export class PostEntity implements IPost {
 	cover: string
 	isPublished: boolean
 	authorId: string
-	author: User
+	author: IUser
 	categories: Post_Category[]
 	comments: Post_Comment[]
 	likes: Post_Like[]

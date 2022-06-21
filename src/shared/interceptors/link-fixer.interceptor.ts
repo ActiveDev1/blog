@@ -6,20 +6,23 @@ import {
 	NestInterceptor,
 	Type
 } from '@nestjs/common'
-import { Post, Post_Comment } from '@prisma/client'
+import { Post } from '@prisma/client'
 import { isEmpty } from 'lodash'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
+import { PaginatedPosts } from 'src/modules/post/interfaces/paginated-posts.interface'
+import { IPost } from 'src/modules/post/interfaces/post.interface'
 import { IUser } from '../../shared/interfaces/user-profile.interface'
 import { fixLink } from '../../shared/utils/helpers/functions'
 import { IComment } from '../interfaces/comment.interface'
 
-type DataType = 'user' | 'users' | 'post' | 'posts' | 'comments'
+type DataType = 'user' | 'users' | 'post' | 'posts' | 'public-posts' | 'comments'
 const dataTypes = {
 	user: fixUserLinks,
 	users: fixUsersLinks,
 	post: fixPostLinks,
 	posts: fixPostsLinks,
+	'public-posts': fixPublicPostsLinks,
 	comments: fixCommentsLinks
 }
 
@@ -29,7 +32,7 @@ export const LinkFixerInterceptor = (type: DataType): Type => {
 		intercept(
 			_context: ExecutionContext,
 			next: CallHandler
-		): Observable<IUser | IUser[] | Post | Post[] | IComment[]> {
+		): Observable<IUser | IUser[] | IPost | IPost[] | IComment[] | PaginatedPosts> {
 			return next.handle().pipe(map((data) => dataTypes[type](data)))
 		}
 	}
@@ -61,15 +64,27 @@ function fixUsersLinks(data: IUser[]) {
 	return data
 }
 
-function fixPostLinks(data: Post) {
+function fixPostLinks(data: IPost) {
 	data.cover = fixLink(data.cover)
+
+	if (data.author) {
+		data.author.profile.avatar = fixLink(data.author.profile.avatar)
+	}
 
 	return data
 }
 
-function fixPostsLinks(data: Post[]) {
+function fixPostsLinks(data: IPost[]) {
 	if (!isEmpty(data)) {
 		data.map((post) => (post.cover = fixLink(post.cover)))
+	}
+
+	return data
+}
+
+function fixPublicPostsLinks(data: PaginatedPosts) {
+	if (!isEmpty(data.posts)) {
+		data.posts.map((post) => fixPostLinks(post))
 	}
 
 	return data

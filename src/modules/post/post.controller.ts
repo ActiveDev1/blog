@@ -58,7 +58,7 @@ export class PostController {
 
 	@Get()
 	@Public()
-	// @UseInterceptors(LinkFixerInterceptor('posts'))
+	@UseInterceptors(LinkFixerInterceptor('public-posts'))
 	async findPublics(@Query() query: PaginationDto) {
 		return await this.postService.findPublics(query)
 	}
