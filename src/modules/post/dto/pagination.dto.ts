@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer'
 import { IsOptional, IsPositive } from 'class-validator'
-import defaultValueDecorator from 'src/shared/decorators/default-value.decorator'
+import defaultValueDecorator from '../../../shared/decorators/default-value.decorator'
 
 export class PaginationDto {
 	@IsOptional()

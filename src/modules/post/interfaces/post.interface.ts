@@ -1,5 +1,5 @@
 import { Post, Post_Category, Post_Comment, Post_Like } from '@prisma/client'
-import { IUser } from 'src/shared/interfaces/user-profile.interface'
+import { IUser } from '../../../shared/interfaces/user-profile.interface'
 
 export interface IPost extends Post {
 	author: IUser

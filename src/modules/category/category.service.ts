@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { slugify } from 'src/shared/utils/helpers/functions'
+import { slugify } from '../../shared/utils/helpers/functions'
 import { CategoryRepository } from './category.repository'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { CategoryNotFound } from './errors/category-not-found'

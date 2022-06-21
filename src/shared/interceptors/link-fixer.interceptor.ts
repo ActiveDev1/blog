@@ -6,12 +6,11 @@ import {
 	NestInterceptor,
 	Type
 } from '@nestjs/common'
-import { Post } from '@prisma/client'
 import { isEmpty } from 'lodash'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { PaginatedPosts } from 'src/modules/post/interfaces/paginated-posts.interface'
-import { IPost } from 'src/modules/post/interfaces/post.interface'
+import { PaginatedPosts } from '../../modules/post/interfaces/paginated-posts.interface'
+import { IPost } from '../../modules/post/interfaces/post.interface'
 import { IUser } from '../../shared/interfaces/user-profile.interface'
 import { fixLink } from '../../shared/utils/helpers/functions'
 import { IComment } from '../interfaces/comment.interface'
