@@ -1,6 +1,7 @@
-import { Post, User } from '@prisma/client'
+import { Post_Category, Post_Comment, Post_Like, User } from '@prisma/client'
+import { IPost } from '../interfaces/post.interface'
 
-export class PostEntity implements Post {
+export class PostEntity implements IPost {
 	id: string
 	title: string
 	body: string
@@ -8,8 +9,11 @@ export class PostEntity implements Post {
 	slug: string
 	cover: string
 	isPublished: boolean
-	user: User
 	authorId: string
+	author: User
+	categories: Post_Category[]
+	comments: Post_Comment[]
+	likes: Post_Like[]
 	createdAt: Date
 	updatedAt: Date
 	deletedAt: Date

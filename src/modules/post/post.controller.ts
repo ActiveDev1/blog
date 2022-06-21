@@ -6,6 +6,7 @@ import {
 	Param,
 	Patch,
 	Post,
+	Query,
 	UseGuards,
 	UseInterceptors
 } from '@nestjs/common'
@@ -29,6 +30,7 @@ import { GetAuthorIdParam } from './dto/get-authorId-param.dto'
 import { PostResponseDto } from './dto/responses/response.post.dto'
 import { UserPostsResponseDto } from './dto/responses/response.user.posts.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
+import { ConnectionArgs } from './page/connection-args.dto'
 import { PostService } from './post.service'
 
 @ApiTags('Post')
@@ -45,6 +47,12 @@ export class PostController {
 	})
 	async create(@Body() body: CreatePostDto, @GetUser() user: User) {
 		return await this.postService.create(body, user)
+	}
+
+	@Get('page')
+	@Public()
+	async findPage(@Query() connectionArgs: ConnectionArgs) {
+		return this.postService.findPage(connectionArgs)
 	}
 
 	@Get('author/:authorId')

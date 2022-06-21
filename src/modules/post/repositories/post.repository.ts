@@ -1,9 +1,11 @@
+import { findManyCursorConnection } from '@devoxa/prisma-relay-cursor-connection'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../../services/prisma/prisma.service'
 import { CreatePost } from '../interfaces/create-post.interface'
 import { IPost } from '../interfaces/post.interface'
 import { UpdatePost } from '../interfaces/update-post.interface'
+import { ConnectionArgs } from '../page/connection-args.dto'
 
 @Injectable()
 export class PostRepository {
@@ -26,6 +28,44 @@ export class PostRepository {
 
 	async findOneWithAuthor(id: string) {
 		return (await this.findById(id, { author: true })) as IPost
+	}
+
+	async findPage(connectionArgs: ConnectionArgs) {
+		const where: Prisma.PostWhereInput = {
+			isPublished: true
+		}
+		const userArgs: Prisma.UserArgs = {
+			select: {
+				id: true,
+				name: true,
+				username: true,
+				profile: {
+					select: { avatar: true }
+				}
+			}
+		}
+		const postSelect: Prisma.PostSelect = {
+			id: true,
+			title: true,
+			description: true,
+			slug: true,
+			cover: true,
+			_count: { select: { likes: true } },
+			author: userArgs,
+			createdAt: true,
+			updatedAt: true
+		}
+		const postPage = await findManyCursorConnection(
+			(args) =>
+				this.prisma.post.findMany({
+					...args,
+					where: where,
+					select: postSelect
+				}),
+			() => this.prisma.post.count({ where: where }),
+			connectionArgs
+		)
+		return postPage
 	}
 
 	async findAllByUserId(userId: string) {

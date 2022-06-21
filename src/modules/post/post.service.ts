@@ -10,6 +10,7 @@ import { UpdatePostDto } from './dto/update-post.dto'
 import { InvalidCategory } from './errors/invalid-category'
 import { WherePostLike } from './interfaces/where-post-like.interface'
 import { WherePost } from './interfaces/where-post.interface'
+import { ConnectionArgs } from './page/connection-args.dto'
 import { PostLikeRepository } from './repositories/post-like.repository'
 import { PostRepository } from './repositories/post.repository'
 
@@ -35,6 +36,10 @@ export class PostService {
 
 		const categories = createPostDto.categories.map((categoryId) => ({ categoryId }))
 		return await this.postRepository.create({ ...createPostDto, categories }, user.id)
+	}
+
+	async findPage(connectionArgs: ConnectionArgs) {
+		return await this.postRepository.findPage(connectionArgs)
 	}
 
 	async findAll(userId: string) {
