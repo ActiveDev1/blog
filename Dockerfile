@@ -3,6 +3,7 @@ FROM node:lts-alpine AS development
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY prisma ./prisma/
 
 RUN npm install glob rimraf
 
@@ -20,6 +21,7 @@ ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY prisma ./prisma/
 
 RUN npm ci --only=production
 

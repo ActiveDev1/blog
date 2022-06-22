@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:7.0.2-alpine
+    command: ['redis-server', '--appendonly', 'yes', '--include /usr/local/etc/redis/redis.conf']
+    volumes:
+      - ./redis/db-data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - '6379:6379'
+    networks:
+      - backend
+    restart: always
+
+  mysql:
+    image: mysql:8.0.28
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    network_mode: host
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+    restart: always
+
+  blog-dev-service:
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    image: blog-dev-service:latest
+    container_name: blog-dev-service
+    command: npm run start:debug
+    restart: unless-stopped
+    ports:
+      - 3010:3000
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - RDS_HOST=mysql
+      - RDS_PORT=3306
+      - RDS_USERNAME=root
+      - RDS_PASSWORD=
+      - RDS_DATABASE=blog
+
+  blog-prod-service:
+    build:
+      context: .
+      target: production
+      dockerfile: ./Dockerfile
+    image: blog-prod-service:latest
+    command: npm run start:prod
+    restart: unless-stopped
+    ports:
+      - '3000-3003:3000'
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - RDS_HOST=mysql
+      - RDS_PORT=3306
+      - RDS_USERNAME=root
+      - RDS_PASSWORD=
+      - RDS_DATABASE=blog
+
+networks:
+  backend:
+    name: backend
