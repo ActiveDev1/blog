@@ -1,7 +1,17 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator'
 import {
-	ApiBody,
+	Body,
+	Controller,
+	HttpCode,
+	HttpStatus,
+	Post,
+	UnauthorizedException,
+	UseGuards
+} from '@nestjs/common'
+import {
+	ApiBearerAuth,
 	ApiCreatedResponse,
+	ApiExtraModels,
 	ApiHeader,
 	ApiNoContentResponse,
 	ApiNotAcceptableResponse,
@@ -17,6 +27,7 @@ import { Role } from '../../shared/decorators/roles.decorator'
 import { Role as Roles } from '../../shared/enums/role.enum'
 import { AuthGuard } from '../../shared/guards/auth.guard'
 import { RolesGuard } from '../../shared/guards/roles.guard'
+import { DefaultResponse } from '../../shared/interceptors/response-transform.interceptor'
 import { AuthService } from './auth.service'
 import { CreateAdminDto } from './dtos/create-admin.dto'
 import { GetEmailCodeDto } from './dtos/get-email-code.dto'
@@ -25,21 +36,32 @@ import { GetEmailVerificationDto } from './dtos/get-email-verification.dto'
 import { GetEmailDto } from './dtos/get-email.dto'
 import { GetUsernameDto } from './dtos/get-username.dto'
 import { Tokens } from './dtos/tokens.dto'
+import { UserExistence } from './dtos/user-existence.dto'
+import { DuplicateUser } from './errors/duplicate-user'
 
-@ApiTags('Auth')
 @Controller('auth')
+@ApiTags('Auth')
+@ApiException(() => UnauthorizedException, { description: 'User is not authorized' })
+@ApiExtraModels(DefaultResponse)
 export class AuthController {
 	constructor(private authService: AuthService) {}
 
 	@Post('signup/admin')
 	@UseGuards(AuthGuard(), RolesGuard)
 	@Role(Roles.ADMIN)
+	@ApiBearerAuth('access-token')
+	@ApiCreatedResponse({
+		description: 'Admin created'
+	})
+	@ApiNotAcceptableResponse({
+		description: 'Admin exists'
+	})
+	@ApiException(() => DuplicateUser, { description: 'Admin exists' })
 	async signupAdmin(@Body() body: CreateAdminDto): Promise<Tokens> {
 		return await this.authService.signupAdmin(body)
 	}
 
 	@Post('code')
-	@ApiBody({ type: GetEmailDto })
 	@ApiNoContentResponse({
 		description: 'A verification code sent to target email'
 	})
@@ -49,7 +71,6 @@ export class AuthController {
 	}
 
 	@Post('signup')
-	@ApiBody({ type: GetEmailVerificationDto })
 	@ApiCreatedResponse({
 		description: 'User created',
 		type: Tokens
@@ -62,7 +83,6 @@ export class AuthController {
 	}
 
 	@Post('login/password')
-	@ApiBody({ type: GetEmailPassDto })
 	@ApiOkResponse({
 		description: 'Successful login',
 		type: Tokens
@@ -73,13 +93,12 @@ export class AuthController {
 	@ApiUnauthorizedResponse({
 		description: 'Email and or password is incorrect'
 	})
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async loginWithPassword(@Body() body: GetEmailPassDto): Promise<Tokens> {
 		return await this.authService.loginWithPassword(body)
 	}
 
 	@Post('login/code')
-	@ApiBody({ type: GetEmailCodeDto })
 	@ApiOkResponse({
 		description: 'Successful login',
 		type: Tokens
@@ -90,7 +109,7 @@ export class AuthController {
 	@ApiUnprocessableEntityResponse({
 		description: 'Wrong code received'
 	})
-	@HttpCode(200)
+	@HttpCode(HttpStatus.OK)
 	async loginWithCode(@Body() body: GetEmailCodeDto): Promise<Tokens> {
 		return await this.authService.loginWithCode(body)
 	}
@@ -111,7 +130,10 @@ export class AuthController {
 	}
 
 	@Post('user-existence')
-	@ApiBody({ type: GetEmailCodeDto })
+	@ApiOkResponse({
+		type: UserExistence
+	})
+	@HttpCode(HttpStatus.OK)
 	async userExistence(@Body() body: GetUsernameDto) {
 		return await this.authService.checkUserExistence(body)
 	}

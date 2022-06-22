@@ -1,5 +1,13 @@
-import { Controller, Param, Post, UploadedFile, UseGuards } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+import {
+	Controller,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	UploadedFile,
+	UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiConsumes, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { User } from '@prisma/client'
 import { memoryStorage } from 'multer'
 import { FastifyFileInterceptor } from 'nest-fastify-multer'
@@ -7,6 +15,8 @@ import { GetUser } from '../../shared/decorators/get-user.decorator'
 import { GetIdParam } from '../../shared/dtos/get-id-param.dto'
 import { AuthGuard } from '../../shared/guards/auth.guard'
 import { BufferedFile } from '../../shared/interfaces/buffered-file.interface'
+import { FileUploadDto } from './dtos/file-upload.dto'
+import { Link } from './dtos/link.dto'
 import { avatarFileFilter } from './filters/avatar.filter'
 import { postCoverFileFilter } from './filters/post.cover.filter'
 import { UploadService } from './upload.service'
@@ -18,6 +28,15 @@ export class UploadController {
 	constructor(private readonly uploadService: UploadService) {}
 
 	@Post('avatar')
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		description: 'Avatar image file',
+		type: FileUploadDto
+	})
+	@ApiCreatedResponse({
+		description: 'Avatar uploaded',
+		type: Link
+	})
 	@FastifyFileInterceptor('avatar', {
 		storage: memoryStorage(),
 		fileFilter: avatarFileFilter
@@ -27,6 +46,15 @@ export class UploadController {
 	}
 
 	@Post('post/:id')
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		description: 'Avatar image file',
+		type: FileUploadDto
+	})
+	@ApiCreatedResponse({
+		description: 'Cover uploaded',
+		type: Link
+	})
 	@FastifyFileInterceptor('cover', {
 		storage: memoryStorage(),
 		fileFilter: postCoverFileFilter

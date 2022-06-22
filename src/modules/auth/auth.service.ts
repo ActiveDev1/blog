@@ -24,12 +24,12 @@ import { GetEmailVerificationDto } from './dtos/get-email-verification.dto'
 import { GetEmailDto } from './dtos/get-email.dto'
 import { GetUsernameDto } from './dtos/get-username.dto'
 import { Tokens } from './dtos/tokens.dto'
+import { UserExistence } from './dtos/user-existence.dto'
 import { DuplicateUser } from './errors/duplicate-user'
 import { WrongEmailPass } from './errors/wrong-email-password'
 import { WrongVerificationCode } from './errors/wrong-verification-code'
 import { EmailVerification } from './interfaces/email-verification.interface'
 import { JwtPayload } from './interfaces/jwt-payload.interface'
-import { UserExistence } from './interfaces/user-existence.interface'
 
 @Injectable()
 export class AuthService {
