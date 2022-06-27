@@ -34,4 +34,6 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 node_modules
-mysql
+services/minio
+services/redis/db-data
+services/mysql

@@ -11,12 +11,12 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## ⚗️technologies
+## ⚗️ technologies
 
 <ul>
     <li> NestJS </li>
     <li> TypeScript </li>
-    <li> prisma</li>
+    <li> Prisma</li>
     <li> Swagger </li>
     <li> Mailer </li>
     <li> Redis </li>
@@ -24,13 +24,13 @@
     <li> Minio (Object Storage) </li>
 </ul>
 
-## 📥Installation
+## 📥 Installation
 
 ```bash
 $ npm install
 ```
 
-## ⚙️Running the app
+## ⚙️ Running the app
 
 ```bash
 
