@@ -36,7 +36,8 @@ export class MinioService implements OnModuleInit {
 				this.client.makeBucket(this.bucketName, 'middle-east', (err) => {
 					if (err) throw err
 					console.log(
-						`\u001b[1;36mminio:info', '\u001b[1;39mBucket (${this.bucketName}) created successfully`
+						'\u001b[1;36mminio:info',
+						'\u001b[1;39mBucket (${this.bucketName}) created successfully'
 					)
 				})
 			}
