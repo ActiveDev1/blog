@@ -33,12 +33,13 @@ services:
       - backend
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.2.0-fpm-alpine
+    image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     links:
       - mysql
     environment:
       PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: ''
     restart: always
     ports:
       - '8080:80'
