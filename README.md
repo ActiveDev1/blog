@@ -42,4 +42,7 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# docker with all containers
+$ docker-compose run
 ```
